@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+    http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>edu.pdx</groupId>
+    <artifactId>dynamic_parameters</artifactId>
+    <version>1.0</version>
+    <dependencies>
+      <dependency>
+        <groupId>net.imagej</groupId>
+        <artifactId>ij</artifactId>
+        <version>1.52e</version>
+      </dependency>
+      <!-- https://mvnrepository.com/artifact/net.imagej/imagej -->
+      <dependency>
+          <groupId>net.imagej</groupId>
+          <artifactId>imagej</artifactId>
+          <version>2.0.0-rc-66</version>
+      </dependency>
+      <dependency>
+        <groupId>org.scijava</groupId>
+        <artifactId>scijava-common</artifactId>
+        <version>2.74.3</version>
+      </dependency>
+    </dependencies>
+    <repositories>
+      <!-- NB: for project parent -->
+      <repository>
+        <id>imagej.public</id>
+        <url>http://maven.imagej.net/content/groups/public</url>
+      </repository>
+    </repositories>
+    <properties>
+      <maven.compiler.source>1.8</maven.compiler.source>
+      <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
+                    <compilerArgs>
+                        <arg>-Xlint:all,-options,-path</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+</project>
