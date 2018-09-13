@@ -27,7 +27,6 @@ import org.scijava.plugin.AbstractRichPlugin;
 import org.scijava.plugin.Plugin;
 import org.scijava.prefs.PrefService;
 
-@Plugin(type = DParameter.class)
 public abstract class AbstractDParameter<T> extends AbstractRichPlugin implements DParameter<T> {
     @Override public void initialize() {}
     @Override public boolean reconstruction_needed() {return false;}

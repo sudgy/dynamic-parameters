@@ -21,6 +21,9 @@ package edu.pdx.imagej.dynamic_parameters;
 
 import ij.gui.GenericDialog;
 
+import org.scijava.plugin.Plugin;
+
+@Plugin(type = DParameter.class)
 public class ChoiceParameter extends AbstractDParameter<String> {
     public ChoiceParameter(String label, String[] items) {this(label, items, items[0]);}
     public ChoiceParameter(String label, String[] items, String default_item)

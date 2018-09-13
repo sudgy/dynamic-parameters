@@ -21,6 +21,9 @@ package edu.pdx.imagej.dynamic_parameters;
 
 import ij.gui.GenericDialog;
 
+import org.scijava.plugin.Plugin;
+
+@Plugin(type = DParameter.class)
 public class IntParameter extends AbstractDParameter<Integer> {
     public IntParameter(Integer starting_value, String label) {this(starting_value, label, "");}
     public IntParameter(Integer starting_value, String label, String units)

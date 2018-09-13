@@ -21,6 +21,9 @@ package edu.pdx.imagej.dynamic_parameters;
 
 import ij.gui.GenericDialog;
 
+import org.scijava.plugin.Plugin;
+
+@Plugin(type = DParameter.class)
 public class BoolParameter extends AbstractDParameter<Boolean> {
     public BoolParameter(String label, Boolean default_value)
     {

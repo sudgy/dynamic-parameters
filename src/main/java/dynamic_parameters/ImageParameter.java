@@ -24,6 +24,9 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import ij.gui.GenericDialog;
 
+import org.scijava.plugin.Plugin;
+
+@Plugin(type = DParameter.class)
 public class ImageParameter extends AbstractDParameter<ImagePlus> {
     public ImageParameter(String label)
     {
