@@ -49,6 +49,61 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
             M_params.get(i).read_from_prefs(c, name + "_" + String.valueOf(i) + "_");
         }
     }
+    @Override public boolean reconstruction_needed()
+    {
+        for (DParameter<?> param : M_params) {
+            if (param.reconstruction_needed()) return true;
+        }
+        return false;
+    }
+    @Override public void recreate()
+    {
+        for (DParameter<?> param : M_params) {
+            if (param.reconstruction_needed()) param.recreate();
+        }
+    }
+    @Override public int width()
+    {
+        int result = 0;
+        for (DParameter<?> param : M_params) {
+            result = Math.max(result, param.width());
+        }
+        return result;
+    }
+    @Override public String get_error()
+    {
+        String result = null;
+        for (DParameter<?> param : M_params) {
+            result = param.get_error();
+            if (result != null) break;
+        }
+        return result;
+    }
+    @Override public String get_warning()
+    {
+        String result = super.get_warning();
+        if (result == null) {
+            for (DParameter<?> param : M_params) {
+                result = param.get_warning();
+                if (result != null) break;
+            }
+        }
+        return result;
+    }
+    @Override public boolean invalid()
+    {
+        for (DParameter<?> param : M_params) {
+            if (param.invalid()) return true;
+        }
+        return false;
+    }
+    @Override public void set_harvester(Harvester h)
+    {
+        for (DParameter<?> param : M_params) {
+            param.set_harvester(h);
+        }
+    }
+
     protected final <T extends DParameter<?>> T add_parameter(Class<T> cls, Object... args)
     {
         Class<?>[] args_c = new Class<?>[args.length];
