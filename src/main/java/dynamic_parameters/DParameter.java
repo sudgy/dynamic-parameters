@@ -35,6 +35,7 @@ public interface DParameter<T> extends Contextual, ImageJPlugin {
     void recreate();
     int width();
     String get_error();
+    String get_warning();
     boolean invalid();
     T get_value();
     void set_harvester(Harvester h);

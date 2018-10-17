@@ -33,12 +33,15 @@ public abstract class AbstractDParameter<T> extends AbstractRichPlugin implement
     @Override public void recreate() {throw new UnsupportedOperationException();}
     @Override public int width() {return 0;}
     @Override public String get_error() {return M_error;}
+    @Override public String get_warning() {return M_warning;}
     @Override public boolean invalid() {return false;}
     @Override public void set_harvester(Harvester h) {M_harvester = h;}
 
     protected final void set_error(String error) {M_error = error;}
+    protected final void set_warning(String warning) {M_warning = warning;}
     protected final PrefService prefs() {return context().getService(PrefService.class);}
     protected Harvester M_harvester;
 
     private String M_error;
+    private String M_warning;
 }

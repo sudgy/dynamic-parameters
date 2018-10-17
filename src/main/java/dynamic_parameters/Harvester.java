@@ -131,6 +131,15 @@ public class Harvester extends WindowAdapter implements DialogListener {
             }
         }
         M_gd.getButtons()[0].setEnabled(true);
+        for (DParameter param : M_params) {
+            error = param.get_warning();
+            if (error != null) {
+                M_error_label.setText(error);
+                M_error_width = M_gd.getGraphics().getFontMetrics().stringWidth(error) + 64;
+                resize();
+                return false;
+            }
+        }
         M_error_label.setText(null);
         M_error_width = 0;
         resize();
