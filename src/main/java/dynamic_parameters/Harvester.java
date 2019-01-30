@@ -35,6 +35,7 @@ import ij.gui.DialogListener;
 
 public class Harvester extends WindowAdapter implements DialogListener {
     public boolean canceled() {return M_canceled;}
+    // This only sets members variables, and nothing else.
     public Harvester(String name, DParameter... params)
     {
         M_name = name;
@@ -43,6 +44,7 @@ public class Harvester extends WindowAdapter implements DialogListener {
             param.set_harvester(this);
         }
     }
+    // This populates the parameters, using the class c to read from prefs
     public void populate(Class<?> c)
     {
         for (int i = 0; i < M_params.length; ++i) {
@@ -55,36 +57,57 @@ public class Harvester extends WindowAdapter implements DialogListener {
             }
         }
     }
+    // This populates the parameters without reading from any prefs
     public void populate()
     {
         create_dialog();
         GenericDialog gd = M_gd;
         M_gd.showDialog();
+        // Because GenericDialog is modal, the dialog has now been closed.  This
+        // could be because the user finished, or because the dialog had to be
+        // recreated.  This if checks if the dialog had to be recreated
         if (!gd.wasCanceled() && !gd.wasOKed()) {
-            M_finished_lock.lock();
-            try {while (!M_finished) M_finished_condition.await();}
-            catch (InterruptedException e) {M_canceled = true;}
-            finally {M_finished_lock.unlock();}
+            // This function shouldn't return until the user is finished.  So we
+            // wait for M_finished to be true before finishing.
+            synchronized(this) {
+                try {while (!M_finished) wait();}
+                catch (InterruptedException e) {M_canceled = true;}
+            }
         }
         if (M_gd.wasCanceled()) M_canceled = true;
     }
+    // This function is called whenever the dialog needs to be remade for any
+    // reason.
     private void create_dialog()
     {
         M_gd = new GenericDialog(M_name);
         for (DParameter param : M_params) {
             param.add_to_dialog(M_gd);
         }
+        // This message is the error/warning
+        // Note that it does NOT get filled in right away
         M_gd.addMessage("", Font.decode(null), Color.RED);
         M_error_label = (Label)M_gd.getMessage();
         M_gd.addDialogListener(this);
         M_gd.addWindowListener(this);
     }
+    // The width of the window without errors is needed to resize the window
+    // correctly when errors are present.  If an error is instantly present it
+    // needs to be shown instantly, though.  This function gets the width before
+    // between the creation of the window and setting of the error.
     @Override
     public void windowOpened(WindowEvent e)
     {
         M_gd_width = M_gd.getSize().width;
         check_for_errors();
     }
+    // Overview of function:
+    // Check all parameters if reconstruction is needed
+    // Reconstruct if needed
+    //     Because reconstructing involves showing and the dialog is modal, this
+    //     function also deals with quitting the dialog as well.  It's annoying,
+    //     but I can't think of a simple way around it right now.
+    // Check for errors
     @Override
     public boolean dialogItemChanged(GenericDialog gd, AWTEvent e)
     {
@@ -104,12 +127,10 @@ public class Harvester extends WindowAdapter implements DialogListener {
                 create_dialog();
                 M_gd.showDialog();
                 if (M_gd.wasCanceled() || M_gd.wasOKed()) {
-                    M_finished_lock.lock();
-                    try {
+                    synchronized(this) {
                         M_finished = true;
-                        M_finished_condition.signal();
+                        notifyAll();
                     }
-                    finally {M_finished_lock.unlock();}
                 }
                 return false;
             }
