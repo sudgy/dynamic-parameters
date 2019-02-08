@@ -18,7 +18,8 @@ everything else from DHM utilities, compile it with maven and then copy the jar
 to the ImageJ plugins folder, removing the old one if you need to.  This plugin
 does not have any dependencies on anything other than what should already be
 included in an ImageJ2/Fiji distribution, and maven should not have any issues
-with compiling it.
+with compiling it.  The documentation can be created using maven's javadoc
+plugin, and will be created in target/site/apidocs/.
 
 USE
 
