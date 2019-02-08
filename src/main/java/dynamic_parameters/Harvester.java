@@ -176,7 +176,7 @@ public class Harvester extends WindowAdapter implements DialogListener {
         M_gd.setSize(width, M_gd.getSize().height);
     }
     private String M_name;
-    private DParameter[] M_params;
+    private DParameter<?>[] M_params;
 
     private GenericDialog M_gd;
     private Label M_error_label;

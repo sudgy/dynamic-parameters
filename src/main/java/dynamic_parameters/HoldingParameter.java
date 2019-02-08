@@ -114,7 +114,7 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
         }
         try {
             T result;
-            if (args.length == 0) result = cls.newInstance();
+            if (args.length == 0) result = cls.getDeclaredConstructor().newInstance();
             else result = cls.getConstructor(args_c).newInstance(args);
             result.setContext(context());
             result.initialize();
