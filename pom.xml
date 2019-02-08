@@ -8,48 +8,71 @@
     <groupId>edu.pdx</groupId>
     <artifactId>dynamic_parameters</artifactId>
     <version>1.1</version>
+
+    <name>Dynamic Parameters</name>
+    <description>This plugin is a preprocessor that allows for dynamic input.  In response to the user, parameters can be added or removed.  There is also support for warnings and errors.</description>
+    <inceptionYear>2018</inceptionYear>
+    <licenses>
+        <license>
+            <name>GNU Lesser General Public License</name>
+            <url>https://www.gnu.org/licenses/lgpl-3.0.en.html</url>
+        </license>
+    </licenses>
+    <organization>
+        <name>Portland State University</name>
+        <url>https://www.pdx.edu/</url>
+    </organization>
+    <developers>
+        <developer>
+            <name>David Cohoe</name>
+            <email>dcohoe@pdx.edu</email>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
+
     <dependencies>
-      <dependency>
-        <groupId>net.imagej</groupId>
-        <artifactId>ij</artifactId>
-        <version>1.52e</version>
-      </dependency>
-      <!-- https://mvnrepository.com/artifact/net.imagej/imagej -->
-      <dependency>
-          <groupId>net.imagej</groupId>
-          <artifactId>imagej</artifactId>
-          <version>2.0.0-rc-66</version>
-      </dependency>
-      <dependency>
-        <groupId>org.scijava</groupId>
-        <artifactId>scijava-common</artifactId>
-        <version>2.74.3</version>
-      </dependency>
+        <dependency>
+            <groupId>net.imagej</groupId>
+            <artifactId>ij</artifactId>
+            <version>1.52e</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/net.imagej/imagej -->
+        <dependency>
+            <groupId>net.imagej</groupId>
+            <artifactId>imagej</artifactId>
+            <version>2.0.0-rc-66</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scijava</groupId>
+            <artifactId>scijava-common</artifactId>
+            <version>2.74.3</version>
+        </dependency>
     </dependencies>
     <repositories>
-      <!-- NB: for project parent -->
-      <repository>
-        <id>imagej.public</id>
-        <url>http://maven.imagej.net/content/groups/public</url>
-      </repository>
+        <!-- NB: for project parent -->
+        <repository>
+            <id>imagej.public</id>
+            <url>http://maven.imagej.net/content/groups/public</url>
+        </repository>
     </repositories>
     <properties>
-      <maven.compiler.source>1.8</maven.compiler.source>
-      <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
-    <reporting>
+    <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.0.1</version>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.1</version>
                 <configuration>
-                    <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
-                    <compilerArgs>
-                        <arg>-Xlint:all,-options,-path</arg>
-                    </compilerArgs>
+                    <compilerArgument>-Xlint:all</compilerArgument>
                 </configuration>
             </plugin>
         </plugins>
-    </reporting>
+    </build>
 </project>
