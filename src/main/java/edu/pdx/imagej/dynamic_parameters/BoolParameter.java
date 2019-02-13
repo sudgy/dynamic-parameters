@@ -23,28 +23,47 @@ import ij.gui.GenericDialog;
 
 import org.scijava.plugin.Plugin;
 
+/** BoolParameter is a {@link DParameter} that holds a single boolean.
+ */
 @Plugin(type = DParameter.class)
 public class BoolParameter extends AbstractDParameter<Boolean> {
+    /** Construct the BoolParameter with its label and default value.
+     *
+     * @param label The label for this parameter to be used on the dialog.
+     * @param default_value The default value for this parameter.
+     */
     public BoolParameter(String label, Boolean default_value)
     {
         M_label = label;
         M_value = default_value;
     }
+    /** Gets the boolean from this parameter.
+     *
+     * @return The boolean from this parameter
+     */
     @Override
     public Boolean get_value() {return M_value;}
 
+    /** Adds this parameter to the dialog.
+     */
     @Override
     public void add_to_dialog(GenericDialog gd)
     {
         gd.addCheckbox(M_label, M_value);
     }
+    /** Reads this parameter from the dialog.
+     */
     @Override
     public void read_from_dialog(GenericDialog gd)
     {
         M_value = gd.getNextBoolean();
     }
+    /** Save this parameter to {@link prefs}
+     */
     public void save_to_prefs(Class<?> c, String name)
         {prefs().put(c, name, M_value);}
+    /** Read this parameter from {@link prefs}
+     */
     public void read_from_prefs(Class<?> c, String name)
         {M_value = prefs().getBoolean(c, name, M_value);}
 

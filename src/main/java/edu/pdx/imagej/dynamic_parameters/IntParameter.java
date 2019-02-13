@@ -23,24 +23,64 @@ import ij.gui.GenericDialog;
 
 import org.scijava.plugin.Plugin;
 
+/** IntParameter is a {@link DParameter} that holds an integer.
+ *
+ * It also has support for bounds checking using its {@link set_bounds}
+ * function.  If the value that the user inputs is outside of this bound, it
+ * will be treated as an error.
+ * <p>
+ * Because <a href="https://javadoc.scijava.org/ImageJ1/ij/gui/GenericDialog.html">GenericDialog</a>
+ * doesn't have a way to do integer values, this class uses a double and then
+ * has an error if the value is not an integer.
+ */
 @Plugin(type = DParameter.class)
 public class IntParameter extends AbstractDParameter<Integer> {
+    /** Construct using a starting value and its label.
+     * <p>
+     * This constructor defaults to having no units.
+     *
+     * @param starting_value The value that this parameter starts at.
+     * @param label The label for this parameter to be used on the dialog.
+     */
     public IntParameter(Integer starting_value, String label) {this(starting_value, label, "");}
+    /** Construct using a starting value, its label, and the units.
+     *
+     * @param starting_value The value that this parameter starts at.
+     * @param label The label for this parameter to be used on the dialog.
+     * @param units The units to be used for the value.  It is purely aesthetic.
+     */
     public IntParameter(Integer starting_value, String label, String units)
     {
         M_value = starting_value;
         M_label = label;
         M_units = units;
     }
+    /** Gets the number from this parameter.
+     *
+     * @return The number from this parameter
+     */
     @Override
     public Integer get_value() {return M_value;}
+    /** Sets the bounds for the value.
+     * <p>
+     * If the value gets outside of the interval <code>[min, max]</code>, it
+     * will be treated as an error.  To have no upper bound, use
+     * <code>Integer.MAX_VALUE</code>, and likewise for the lower bound.
+     *
+     * @param min The minimum value that this parameter should take
+     * @param max The maximum value that this parameter should take
+     */
     public void set_bounds(int min, int max) {M_min = min; M_max = max; check_for_errors();}
 
+    /** Adds this parameter to the dialog.
+     */
     @Override
     public void add_to_dialog(GenericDialog gd)
     {
         gd.addNumericField(M_label, M_value, 0, 9, M_units);
     }
+    /** Reads this parameter from the dialog.
+     */
     @Override
     public void read_from_dialog(GenericDialog gd)
     {
@@ -57,9 +97,13 @@ public class IntParameter extends AbstractDParameter<Integer> {
         M_value = (int)value;
         check_for_errors();
     }
+    /** Save this parameter to {@link prefs}
+     */
     @Override
     public void save_to_prefs(Class<?> c, String name)
         {prefs().put(c, name, M_value);}
+    /** Read this parameter from {@link prefs}
+     */
     @Override
     public void read_from_prefs(Class<?> c, String name)
     {
@@ -67,6 +111,14 @@ public class IntParameter extends AbstractDParameter<Integer> {
         check_for_errors();
     }
 
+    /** Checks if a double is an integer.
+     *
+     * This is a simple utility function to determine if a double is close
+     * enough to an integer.
+     *
+     * @param value The double to check.
+     * @return Whether or not the value is an integer.
+     */
     public static boolean is_int(double value)
         {return Double.isFinite(value) && Double.compare(value, StrictMath.rint(value)) == 0;}
 

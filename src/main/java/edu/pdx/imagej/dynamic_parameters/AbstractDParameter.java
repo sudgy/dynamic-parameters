@@ -27,19 +27,95 @@ import org.scijava.plugin.AbstractRichPlugin;
 import org.scijava.plugin.Plugin;
 import org.scijava.prefs.PrefService;
 
+/**
+ * AbstractDParameter is a {@link DParameter} that implements (almost) all of
+ * the functions to sensible defaults.
+ * <p>
+ * It is suggested to extend this class rather than implement the
+ * {@link DParameter} <code>interface</code>, for two main reasons.  First, this
+ * class extends
+ * <a href="https://javadoc.scijava.org/SciJava/org/scijava/plugin/AbstractRichPlugin.html">AbstractRichPlugin</a>,
+ * so all of the benefits that you get from it you get from this class.  Second,
+ * this class implements most of the functions from {@link DParameter} with
+ * sensible defaults, leaving only the <code>add</code> and <code>read</code>
+ * functions and {@link get_value} to implement.  Of course, if you want, you
+ * can override any of these defaults.
+ */
 public abstract class AbstractDParameter<T> extends AbstractRichPlugin implements DParameter<T> {
+    /** {@inheritDoc}
+     * <p>
+     * This function defaults to doing nothing.
+     */
     @Override public void initialize() {}
+    /** {@inheritDoc}
+     * <p>
+     * This function defaults to returning false.
+     */
     @Override public boolean reconstruction_needed() {return false;}
+    /** {@inheritDoc}
+     * <p>
+     * This function defaults to throwing an
+     * <code>UnsupportedOperationException</code>.
+     */
     @Override public void recreate() {throw new UnsupportedOperationException();}
+    /** {@inheritDoc}
+     * <p>
+     * This function defaults to returning zero.
+     */
     @Override public int width() {return 0;}
+    /** {@inheritDoc}
+     * <p>
+     * This function defaults to returning the string passed into the last call
+     * to {@link set_error}.
+     */
     @Override public String get_error() {return M_error;}
+    /** {@inheritDoc}
+     * <p>
+     * This function defaults to returning the string passed into the last call
+     * to {@link set_warning}.
+     */
     @Override public String get_warning() {return M_warning;}
+    /** {@inheritDoc}
+     * <p>
+     * This function defaults to returning false.
+     */
     @Override public boolean invalid() {return false;}
+    /** {@inheritDoc}
+     * <p>
+     * This function defaults to setting <code>M_harvester</code> to
+     * <code>h</code>.
+     */
     @Override public void set_harvester(Harvester h) {M_harvester = h;}
 
+    /** Sets the error.
+     * <p>
+     * The string passed into this function will be used as the error for
+     * {@link get_error}.
+     *
+     * @param error The error string
+     */
     protected final void set_error(String error) {M_error = error;}
+    /** Sets the warning.
+     * <p>
+     * The string passed into this function will be used as the warning for
+     * {@link get_warning}.
+     *
+     * @param warning The warning string
+     */
     protected final void set_warning(String warning) {M_warning = warning;}
+    /** Gets the <a href="https://javadoc.scijava.org/SciJava/org/scijava/prefs/PrefService.html">PrefService</a>
+     * associated with the context.
+     * <p>
+     * Use it to implement {@link read_from_prefs read_from_prefs}.
+     *
+     * @return The PrefService associated with the context
+     */
     protected final PrefService prefs() {return context().getService(PrefService.class);}
+    /** The harvester that this parameter is in.
+     * <p>
+     * It is set by {@link set_harvester} after initialization, but before the
+     * dialog appears.
+     */
     protected Harvester M_harvester;
 
     private String M_error;

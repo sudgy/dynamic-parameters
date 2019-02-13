@@ -23,14 +23,52 @@ import ij.gui.GenericDialog;
 
 import org.scijava.plugin.Plugin;
 
+/** DoubleParameter is a {@link DParameter} that holds a floating point number.
+ *
+ * It also has support for bounds checking using its {@link set_bounds}
+ * function.  If the value that the user inputs is outside of this bound, it
+ * will be treated as an error.
+ */
 @Plugin(type = DParameter.class)
 public class DoubleParameter extends AbstractDParameter<Double> {
+    /** Construct using a starting value and its label.
+     * <p>
+     * This constructor defaults to having no units and three decimal places.
+     *
+     * @param starting_value The value that this parameter starts at.
+     * @param label The label for this parameter to be used on the dialog.
+     */
     public DoubleParameter(Double starting_value, String label)
         {this(starting_value, label, "", 3);}
+    /** Construct using a starting value, its label, and the number of decimal
+     * places allowed.
+     * <p>
+     * This constructor defaults to having no units.
+     *
+     * @param starting_value The value that this parameter starts at.
+     * @param label The label for this parameter to be used on the dialog.
+     * @param decimals The number of decimal places allowed for the value.
+     */
     public DoubleParameter(Double starting_value, String label, int decimals)
         {this(starting_value, label, "", decimals);}
+    /** Construct using a starting value, its label, and the units.
+     * <p>
+     * This constructor defaults to having three decimal places.
+     *
+     * @param starting_value The value that this parameter starts at.
+     * @param label The label for this parameter to be used on the dialog.
+     * @param units The units to be used for the value.  It is purely aesthetic.
+     */
     public DoubleParameter(Double starting_value, String label, String units)
         {this(starting_value, label, units, 3);}
+    /** Construct using a starting value, a label, units, and the number of
+     * decimal places allowed.
+     *
+     * @param starting_value The value that this parameter starts at.
+     * @param label The label for this parameter to be used on the dialog.
+     * @param units The units to be used for the value.  It is purely aesthetic.
+     * @param decimals The number of decimal places allowed for the value.
+     */
     public DoubleParameter(Double starting_value, String label, String units, int decimals)
     {
         M_value = starting_value;
@@ -38,24 +76,50 @@ public class DoubleParameter extends AbstractDParameter<Double> {
         M_units = units;
         M_decimals = decimals;
     }
+    /** Gets the number from this parameter.
+     *
+     * @return The number from this parameter
+     */
     @Override
     public Double get_value() {return M_value;}
+    /** Sets the bounds for the value.
+     * <p>
+     * If the value gets outside of the interval <code>[min, max]</code>, it
+     * will be treated as an error.  Here are some examples of intervals and the
+     * call needed to get them:
+     * <ul>
+     *      <li>[2, 4] : <code>set_bounds(2.0, 4.0)</code></li>
+     *      <li>[0, ∞) : <code>set_bounds(0, Double.MAX_VALUE)</code></li>
+     *      <li>(-∞, 0) : <code>set_bounds(-Double.MAX_VALUE, -Double.MIN_VALUE)</code></li>
+     * </ul>
+     *
+     * @param min The minimum value that this parameter should take
+     * @param max The maximum value that this parameter should take
+     */
     public void set_bounds(double min, double max) {M_min = min; M_max = max; check_for_errors();}
 
+    /** Adds this parameter to the dialog.
+     */
     @Override
     public void add_to_dialog(GenericDialog gd)
     {
         gd.addNumericField(M_label, M_value, M_decimals, 9, M_units);
     }
+    /** Reads this parameter from the dialog.
+     */
     @Override
     public void read_from_dialog(GenericDialog gd)
     {
         M_value = gd.getNextNumber();
         check_for_errors();
     }
+    /** Save this parameter to {@link prefs}
+     */
     @Override
     public void save_to_prefs(Class<?> c, String name)
         {prefs().put(c, name, M_value);}
+    /** Read this parameter from {@link prefs}
+     */
     @Override
     public void read_from_prefs(Class<?> c, String name)
     {
