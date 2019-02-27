@@ -111,29 +111,43 @@ public interface DParameter<T> extends Contextual, ImageJPlugin {
      * @param name The name used to identify this parameter.
      */
     void read_from_prefs(Class<?> c, String name);
-    /**
-     * See if the dialog needs to be recreated.
+    /** Checks if this parameter should be put on the dialog.
      * <p>
-     * This function should return true whenever the parameters have changed
-     * enough that new ones need to be added or old ones destroyed.  The
-     * {@link Harvester} will recreate the dialog and call both
-     * {@link reconstruction_needed} and {@link add_to_dialog add_to_dialog} on
-     * all parameters on the new dialog.
+     * If the parameter is visible, it will be put on the dialog, and if it is
+     * not visible, it will not be put on the dialog.
+     * <p>
+     * Note: This function should only be called by the {@link Harvester}.
      *
-     * @return True if reconstruction is needed, false if not.
+     * @return Whether or not this parameter should be put on the dialog.
      */
-    boolean reconstruction_needed();
-    /**
-     * Recreate this parameter.
+    boolean visible();
+    /** Checks if the parameter's visibility changed.
      * <p>
-     * This function is called by the {@link Harvester} when
-     * {@link reconstruction_needed} is <code>true</code>.  It should create or
-     * destroy any parameters as needed.
+     * If the parameter is currently visible and shouldn't be, or vice versa,
+     * the Harvester needs to know, and uses this function to determine it.
      * <p>
-     * This function should only be used for more complicated parameters.  None
-     * of the default parameters included in this package use it.
+     * Note: This function should only be called by the {@link Harvester}.
+     *
+     * @return If the visibility of this parameter has changed.
      */
-    void recreate();
+    boolean visibility_changed();
+    /** Sets the new visibility.
+     * <p>
+     * This function should not change the result of {@link visible}
+     * <em>yet</em>.  This just marks that the visibility needs to change at
+     * some point soon.  The {@link Harvester}, when it sees that
+     * {@link visibility_changed} is true, will then refresh all parameter's
+     * visibility.
+     *
+     * @param value The new visibility to eventually change to
+     */
+    void set_new_visibility(boolean value);
+    /** Makes {@link visible} return the value last set by
+     * {@link set_new_visibility}.
+     * <p>
+     * This function should only be called by the {@link Harvester}.
+     */
+    void refresh_visibility();
     /**
      * The width that this parameter needs on the dialog, if needed.
      * <p>

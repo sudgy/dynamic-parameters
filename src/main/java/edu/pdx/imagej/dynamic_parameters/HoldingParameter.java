@@ -28,13 +28,17 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
     @Override public void add_to_dialog(GenericDialog gd)
     {
         for (DParameter<?> param : M_params) {
-            param.add_to_dialog(gd);
+            if (param.visible()) {
+                param.add_to_dialog(gd);
+            }
         }
     }
     @Override public void read_from_dialog(GenericDialog gd)
     {
         for (DParameter<?> param : M_params) {
-            param.read_from_dialog(gd);
+            if (param.visible()) {
+                param.read_from_dialog(gd);
+            }
         }
     }
     @Override public void save_to_prefs(Class<?> c, String name)
@@ -49,18 +53,19 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
             M_params.get(i).read_from_prefs(c, name + "_" + String.valueOf(i) + "_");
         }
     }
-    @Override public boolean reconstruction_needed()
+    @Override public boolean visibility_changed()
     {
         for (DParameter<?> param : M_params) {
-            if (param.reconstruction_needed()) return true;
+            if (param.visibility_changed()) return true;
         }
-        return false;
+        return super.visibility_changed();
     }
-    @Override public void recreate()
+    @Override public void refresh_visibility()
     {
         for (DParameter<?> param : M_params) {
-            if (param.reconstruction_needed()) param.recreate();
+            param.refresh_visibility();
         }
+        super.refresh_visibility();
     }
     @Override public int width()
     {
@@ -72,10 +77,14 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
     }
     @Override public String get_error()
     {
-        String result = null;
-        for (DParameter<?> param : M_params) {
-            result = param.get_error();
-            if (result != null) break;
+        String result = super.get_error();
+        if (result == null) {
+            for (DParameter<?> param : M_params) {
+                if (param.visible()) {
+                    result = param.get_error();
+                    if (result != null) break;
+                }
+            }
         }
         return result;
     }
@@ -84,8 +93,10 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
         String result = super.get_warning();
         if (result == null) {
             for (DParameter<?> param : M_params) {
-                result = param.get_warning();
-                if (result != null) break;
+                if (param.visible()) {
+                    result = param.get_warning();
+                    if (result != null) break;
+                }
             }
         }
         return result;

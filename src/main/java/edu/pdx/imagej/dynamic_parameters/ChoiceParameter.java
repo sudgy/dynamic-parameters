@@ -48,6 +48,7 @@ public class ChoiceParameter extends AbstractDParameter<String> {
         M_label = label;
         M_items = items;
         M_value = default_item;
+        M_default_value = default_item;
     }
     /** Gets the string from this parameter.
      *
@@ -79,9 +80,18 @@ public class ChoiceParameter extends AbstractDParameter<String> {
      */
     @Override
     public void read_from_prefs(Class<?> c, String name)
-        {M_value = prefs().get(c, name, M_value);}
+    {
+        M_value = prefs().get(c, name, M_value);
+        // The prefs can get funky and return something that is not a choice.
+        // If that happens, reset to the default value.
+        for (String s : M_items) {
+            if (s.equals(M_value)) return;
+        }
+        M_value = M_default_value;
+    }
 
     private String M_label;
     private String[] M_items;
     private String M_value;
+    private String M_default_value;
 }

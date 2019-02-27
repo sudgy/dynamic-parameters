@@ -47,17 +47,14 @@ public abstract class AbstractDParameter<T> extends AbstractRichPlugin implement
      * This function defaults to doing nothing.
      */
     @Override public void initialize() {}
-    /** {@inheritDoc}
-     * <p>
-     * This function defaults to returning false.
-     */
-    @Override public boolean reconstruction_needed() {return false;}
-    /** {@inheritDoc}
-     * <p>
-     * This function defaults to throwing an
-     * <code>UnsupportedOperationException</code>.
-     */
-    @Override public void recreate() {throw new UnsupportedOperationException();}
+    /** {@inheritDoc} */
+    @Override public boolean visible() {return M_visible;}
+    /** {@inheritDoc} */
+    @Override public boolean visibility_changed() {return M_visible != M_new_visible;}
+    /** {@inheritDoc} */
+    @Override public void set_new_visibility(boolean value) {M_new_visible = value;}
+    /** {@inheritDoc} */
+    @Override public void refresh_visibility() {M_visible = M_new_visible;}
     /** {@inheritDoc}
      * <p>
      * This function defaults to returning zero.
@@ -120,4 +117,6 @@ public abstract class AbstractDParameter<T> extends AbstractRichPlugin implement
 
     private String M_error;
     private String M_warning;
+    private boolean M_visible = true;
+    private boolean M_new_visible = true;
 }

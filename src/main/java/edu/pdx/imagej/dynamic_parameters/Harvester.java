@@ -49,6 +49,7 @@ public class Harvester extends WindowAdapter implements DialogListener {
     {
         for (int i = 0; i < M_params.length; ++i) {
             M_params[i].read_from_prefs(c, String.valueOf(i));
+            M_params[i].refresh_visibility();
         }
         populate();
         if (!M_canceled) {
@@ -82,7 +83,9 @@ public class Harvester extends WindowAdapter implements DialogListener {
     {
         M_gd = new GenericDialog(M_name);
         for (DParameter param : M_params) {
-            param.add_to_dialog(M_gd);
+            if (param.visible()) {
+                param.add_to_dialog(M_gd);
+            }
         }
         // This message is the error/warning
         // Note that it does NOT get filled in right away
@@ -116,9 +119,9 @@ public class Harvester extends WindowAdapter implements DialogListener {
             boolean reconstruction_needed = false;
             for (DParameter param : M_params) {
                 param.read_from_dialog(M_gd);
-                if (param.reconstruction_needed()) {
+                if (param.visibility_changed()) {
                     reconstruction_needed = true;
-                    param.recreate();
+                    param.refresh_visibility();
                 }
             }
             if (reconstruction_needed) {
