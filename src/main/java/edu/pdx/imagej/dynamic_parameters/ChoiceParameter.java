@@ -45,6 +45,7 @@ public class ChoiceParameter extends AbstractDParameter<String> {
      */
     public ChoiceParameter(String label, String[] items, String default_item)
     {
+        super(label);
         M_label = label;
         M_items = items;
         M_value = default_item;

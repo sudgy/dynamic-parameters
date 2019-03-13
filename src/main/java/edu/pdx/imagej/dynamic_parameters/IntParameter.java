@@ -51,6 +51,7 @@ public class IntParameter extends AbstractDParameter<Integer> {
      */
     public IntParameter(Integer starting_value, String label, String units)
     {
+        super(label);
         M_value = starting_value;
         M_label = label;
         M_units = units;

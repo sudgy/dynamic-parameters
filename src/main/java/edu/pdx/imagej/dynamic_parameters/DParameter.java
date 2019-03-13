@@ -37,8 +37,7 @@ import net.imagej.ImageJPlugin;
  * parameter is (currently) holding.
  * <p>
  * Many of these functions are used to signal to the {@link Harvester} holding
- * them, such as {@link reconstruction_needed}, {@link get_error}, and
- * {@link get_warning}.
+ * them, such as {@link visible}, {@link get_error}, and {@link get_warning}.
  * <p>
  * It is not suggested to directly implement this interface.
  * {@link AbstractDParameter} should be used instead, as it automates a lot of
@@ -59,6 +58,15 @@ public interface DParameter<T> extends Contextual, ImageJPlugin {
      * context and then call this function.
      */
     void initialize();
+    /**
+     * Get the label used to differentiate this parameter from others.
+     * <p>
+     * This function is used internally for things like saving to preferences.
+     * While it is suggested that the label is the same label as on the dialog,
+     * this is not required.
+     * @return The label used for differentiating this parameter from others
+     */
+    String label();
     /**
      * Add this parameter to the dialog.
      * <p>

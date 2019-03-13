@@ -71,6 +71,7 @@ public class DoubleParameter extends AbstractDParameter<Double> {
      */
     public DoubleParameter(Double starting_value, String label, String units, int decimals)
     {
+        super(label);
         M_value = starting_value;
         M_label = label;
         M_units = units;

@@ -42,11 +42,30 @@ import org.scijava.prefs.PrefService;
  * can override any of these defaults.
  */
 public abstract class AbstractDParameter<T> extends AbstractRichPlugin implements DParameter<T> {
+    /** Constructs a AbstractDParameter with a given label.
+     * <p>
+     * This label is the ones returned by {@link label}, not necessarilly the
+     * one displayed on screen (even though this is suggested).
+     * <p>
+     * Note that this is the only constructor, so every AbstractDParameter must
+     * have a label.
+     *
+     * @param label The label to be returned by {@link label}.
+     */
+    public AbstractDParameter(String label)
+    {
+        M_label = label;
+    }
     /** {@inheritDoc}
      * <p>
      * This function defaults to doing nothing.
      */
     @Override public void initialize() {}
+    /** {@inheritDoc}
+     * <p>
+     * This function defaults to returning what was passed into the constructor.
+     */
+    @Override public String label() {return M_label;}
     /** {@inheritDoc} */
     @Override public boolean visible() {return M_visible;}
     /** {@inheritDoc} */
@@ -115,6 +134,7 @@ public abstract class AbstractDParameter<T> extends AbstractRichPlugin implement
      */
     protected Harvester M_harvester;
 
+    private String M_label;
     private String M_error;
     private String M_warning;
     private boolean M_visible = true;

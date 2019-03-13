@@ -47,14 +47,14 @@ public class Harvester extends WindowAdapter implements DialogListener {
     // This populates the parameters, using the class c to read from prefs
     public void populate(Class<?> c)
     {
-        for (int i = 0; i < M_params.length; ++i) {
-            M_params[i].read_from_prefs(c, String.valueOf(i));
-            M_params[i].refresh_visibility();
+        for (DParameter<?> param : M_params) {
+            param.read_from_prefs(c, param.label());
+            param.refresh_visibility();
         }
         populate();
         if (!M_canceled) {
-            for (int i = 0; i < M_params.length; ++i) {
-                M_params[i].save_to_prefs(c, String.valueOf(i));
+            for (DParameter<?> param : M_params) {
+                param.save_to_prefs(c, param.label());
             }
         }
     }

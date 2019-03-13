@@ -34,6 +34,7 @@ public class BoolParameter extends AbstractDParameter<Boolean> {
      */
     public BoolParameter(String label, Boolean default_value)
     {
+        super(label);
         M_label = label;
         M_value = default_value;
     }

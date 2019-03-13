@@ -40,6 +40,7 @@ public class ImageParameter extends AbstractDParameter<ImagePlus> {
      */
     public ImageParameter(String label)
     {
+        super(label);
         M_label = label;
         M_id_list = WindowManager.getIDList();
         if (M_id_list == null) {
