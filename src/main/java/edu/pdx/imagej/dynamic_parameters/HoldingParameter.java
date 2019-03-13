@@ -197,6 +197,8 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
      * and rethrown.
      *
      *
+     * @param <T> The type of the new parameter to create.  It can be determined
+     *            through the <code>cls</code> parameter.
      * @param cls The class of the new parameter to create.
      * @param args The arguments to the class constructor.  If creating a
      *             non-static inner class, the first argument must be an

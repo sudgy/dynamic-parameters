@@ -33,9 +33,23 @@ import java.util.concurrent.locks.Condition;
 import ij.gui.GenericDialog;
 import ij.gui.DialogListener;
 
+/** The Harvester takes in a bunch of {@link DParameter}s and populates them
+ * through a dialog.  It is used by the {@link DynamicPreprocessor} and should
+ * not be created manually.
+ */
 public class Harvester extends WindowAdapter implements DialogListener {
+    /** Checks if the user cancelled the dialog.
+     *
+     * @return <code>true</code> if the user cancelled the dialog */
     public boolean canceled() {return M_canceled;}
-    // This only sets members variables, and nothing else.
+    /** Create the Harvester.
+     *
+     * It only sets inputs, and nothing else.
+     *
+     * @param name Window title to be used for the dialog.  It is usually the
+     *             title of the command.
+     * @param params {@link DParameter}s to populate.
+     */
     public Harvester(String name, DParameter... params)
     {
         M_name = name;
@@ -44,7 +58,11 @@ public class Harvester extends WindowAdapter implements DialogListener {
             param.set_harvester(this);
         }
     }
-    // This populates the parameters, using the class c to read from prefs
+    /** Populate the parameters with preferences
+     *
+     * @param c The class to read from prefs with.  It is usually the class of
+     *          the command itself.
+     */
     public void populate(Class<?> c)
     {
         for (DParameter<?> param : M_params) {
@@ -58,6 +76,7 @@ public class Harvester extends WindowAdapter implements DialogListener {
             }
         }
     }
+    /** Populate the parameters without preferences */
     // This populates the parameters without reading from any prefs
     public void populate()
     {
@@ -66,7 +85,7 @@ public class Harvester extends WindowAdapter implements DialogListener {
         M_gd.showDialog();
         // Because GenericDialog is modal, the dialog has now been closed.  This
         // could be because the user finished, or because the dialog had to be
-        // recreated.  This if checks if the dialog had to be recreated
+        // recreated.  This if checks if the dialog had to be recreated.
         if (!gd.wasCanceled() && !gd.wasOKed()) {
             // This function shouldn't return until the user is finished.  So we
             // wait for M_finished to be true before finishing.
@@ -77,8 +96,6 @@ public class Harvester extends WindowAdapter implements DialogListener {
         }
         if (M_gd.wasCanceled()) M_canceled = true;
     }
-    // This function is called whenever the dialog needs to be remade for any
-    // reason.
     private void create_dialog()
     {
         M_gd = new GenericDialog(M_name);
@@ -94,27 +111,31 @@ public class Harvester extends WindowAdapter implements DialogListener {
         M_gd.addDialogListener(this);
         M_gd.addWindowListener(this);
     }
-    // The width of the window without errors is needed to resize the window
-    // correctly when errors are present.  If an error is instantly present it
-    // needs to be shown instantly, though.  This function gets the width before
-    // between the creation of the window and setting of the error.
+    /** Calculate anything needed when the window is opened. */
     @Override
     public void windowOpened(WindowEvent e)
     {
+        // The width of the window without errors is needed to resize the window
+        // correctly when errors are present.  If an error is instantly present
+        // it needs to be shown instantly, though.  This function gets the width
+        // between the creation of the window and setting of the error.
         M_gd_width = M_gd.getSize().width;
         check_for_errors();
     }
-    // Overview of function:
-    // Check all parameters if reconstruction is needed
-    // Reconstruct if needed
-    //     Because reconstructing involves showing and the dialog is modal, this
-    //     function also deals with quitting the dialog as well.  It's annoying,
-    //     but I can't think of a simple way around it right now.
-    // Check for errors
+    /** React to user input.  This recreates the dialog if it is needed.
+     *
+     * @param gd The GenericDialog that created this event (not necessarilly
+     *           M_gd).
+     * @param e The event (<code>null</code> if its from pressing OK).
+     * @return <code>true</code> if the dialog is in a valid state.
+     */
     @Override
     public boolean dialogItemChanged(GenericDialog gd, AWTEvent e)
     {
+        // If the user pressed okay, just don't do anything
         if (e == null) return true;
+        // If gd != M_gd, that means that this dialog is an old dialog closing.
+        // We don't want to have anything to do with it in that case.
         if (gd == M_gd) {
             boolean reconstruction_needed = false;
             for (DParameter param : M_params) {
@@ -129,21 +150,38 @@ public class Harvester extends WindowAdapter implements DialogListener {
                 M_gd.dispose();
                 create_dialog();
                 M_gd.showDialog();
+                // Because GenericDialog is modal, the dialog has now been
+                // closed.  If it was canceled or oked, our job is done and we
+                // need to notify populate().
                 if (M_gd.wasCanceled() || M_gd.wasOKed()) {
                     synchronized(this) {
                         M_finished = true;
                         notifyAll();
                     }
                 }
+                // Because we reconstructed, we are returning for an old dialog.
+                // This return value doesn't really matter, but it doesn't hurt.
                 return false;
             }
+            // if (!reconstruction_needed)
             else return check_for_errors();
         }
+        // if (gd != M_gd)
         else return false;
     }
+    /** Check if there is any error or warning in the parameters.
+     * <p>
+     * Some change other than that found through {@link dialogItemChanged} might
+     * cause an error.  So, if any {@link DParameter} needs to cause an error
+     * without changing the dialog, it can call this function directly.
+     *
+     * @return <code>true</code> if there are no errors.  This value is used for
+     *         {@link dialogItemChanged}.
+     */
     public boolean check_for_errors()
     {
         String error = null;
+        // Check error
         for (DParameter param : M_params) {
             error = param.get_error();
             if (error != null) {
@@ -154,7 +192,10 @@ public class Harvester extends WindowAdapter implements DialogListener {
                 return false;
             }
         }
+        // There is no error, we can push OK (this must be here because warnings
+        // need to return before the end of the function)
         M_gd.getButtons()[0].setEnabled(true);
+        // Check warning
         for (DParameter param : M_params) {
             error = param.get_warning();
             if (error != null) {
@@ -164,6 +205,7 @@ public class Harvester extends WindowAdapter implements DialogListener {
                 return true;
             }
         }
+        // There are no errors or warnings
         M_error_label.setText(null);
         M_error_width = 0;
         resize();

@@ -31,8 +31,17 @@ import org.scijava.module.process.PreprocessorPlugin;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.Parameter;
 
+/** This is a Scijava <a href="https://javadoc.scijava.org/SciJava/org/scijava/module/process/PreprocessorPlugin.html">Preprocessor Plugin</a>
+ * that populates dynamic input parameters for a module.
+ * <p>
+ * It populates any Scijava <a href="https://javadoc.scijava.org/SciJava/org/scijava/plugin/Parameter.html">Parameter</a>
+ * that implements the {@link DParameter} interface.  It does this by creating a
+ * {@link Harvester} with all of the DParameters that it finds.  Users and
+ * programmers shouldn't ever need to use this class directly.
+ */
 @Plugin(type = PreprocessorPlugin.class, priority = Priority.LOW)
 public class DynamicPreprocessor extends AbstractPreprocessorPlugin {
+    /** Populate the inputs. */
     @Override
     public void process(final Module module)
     {
