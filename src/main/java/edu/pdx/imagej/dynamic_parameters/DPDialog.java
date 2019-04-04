@@ -31,9 +31,31 @@ import java.util.function.Supplier;
  * @author David Cohoe
  */
 public interface DPDialog {
+    /** This interface describes a number that can be returned from a dialog.
+     * It acts similarly to the {@link Supplier}s that other {@link DPDialog}
+     * functions return, but it also has support for bounds.
+     */
     public interface DialogNumber<T extends Number & Comparable<T>> {
+        /** Get the current value.  This function is allowed to return
+         * <code>null</code>, which the receiver should interpret as an error.
+         *
+         * @return The current value represented by this DialogNumber.
+         */
         public T get();
+        /** Check if a value is in bounds.  The bounds are those set by the last
+         * call to <code>set_bounds</code>.
+         *
+         * @param value The value to check.
+         * @return Whether or not the value is in the bounds.
+         */
         public boolean in_bounds(T value);
+        /** Set the bounds for this number.  This will affect calls to
+         * <code>in_bounds</code>, and it can also possibly affect the dialog as
+         * well.
+         *
+         * @param min The minimum value this number can take.
+         * @param max The maximum value this number can take.
+         */
         public void set_bounds(T min, T max);
     }
     /** Add a boolean to the dialog.
@@ -66,21 +88,17 @@ public interface DPDialog {
      *
      * @param label The label to be used on the dialog.
      * @param default_value The default value for the number.
-     * @param min_value The minimum allowed value for the number.
-     * @param max_value The maximum allowed value for the number.
      * @param units The units to display for this value.
      * @param decimals The number of decimal points supported.
-     * @return A {@link Supplier} that will return the current value.
+     * @return A {@link DialogNumber} that represents the current value.
      */
     DialogNumber<Double> add_double(String label, double default_value, String units, int decimals);
     /** Add an integer to the dialog.
      *
      * @param label The label to be used on the dialog.
      * @param default_value The default value for the integer.
-     * @param min_value The minimum allowed value for the integer.
-     * @param max_value The maximum allowed value for the integer.
      * @param units The units to display for this value.
-     * @return A {@link Supplier} that will return the current value.
+     * @return A {@link DialogNumber} that represents the current value.
      */
     DialogNumber<Integer> add_integer(String label, int default_value, String units);
     /** Add a panel to the dialog.

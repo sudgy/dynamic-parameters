@@ -36,9 +36,11 @@ import ij.gui.DialogListener;
 
 /** <code>HarvesterDialog</code> is the canonical implementation of
  * {@link DPDialog}.  It is what the {@link Harvester} uses to populate the
- * parameters.
+ * parameters.  Because its constructor is package private, users should never
+ * need to create this class or use any of it.
  */
 class HarvesterDialog implements DPDialog, DialogListener, ChangeListener {
+    // All of these functions are really simple.  No comments for you.
     HarvesterDialog(String name)
     {
         M_gd = new GenericDialog(name);
@@ -190,6 +192,7 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener {
         return (Label)M_gd.getMessage();
     }
 
+    // This function is basically copy + pasted from ImageJ's GenericDialog code
     private void add_fake_number(String label, JSpinner spinner, String units)
     {
         spinner.setPreferredSize(new Dimension(200, spinner.getPreferredSize().height));
