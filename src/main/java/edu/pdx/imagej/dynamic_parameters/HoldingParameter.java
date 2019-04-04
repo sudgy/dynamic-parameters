@@ -52,11 +52,11 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
      * This calls add_to_dialog to every parameter in this one, as long as it is
      * {@link visible visible()}.
      */
-    @Override public void add_to_dialog(GenericDialog gd)
+    @Override public void add_to_dialog(DPDialog dialog)
     {
         for (DParameter<?> param : M_params) {
             if (param.visible()) {
-                param.add_to_dialog(gd);
+                param.add_to_dialog(dialog);
             }
         }
     }
@@ -66,11 +66,11 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
      * This calls read_from_dialog to every parameter in this one, as long as it is
      * {@link visible visible()}.
      */
-    @Override public void read_from_dialog(GenericDialog gd)
+    @Override public void read_from_dialog()
     {
         for (DParameter<?> param : M_params) {
             if (param.visible()) {
-                param.read_from_dialog(gd);
+                param.read_from_dialog();
             }
         }
     }

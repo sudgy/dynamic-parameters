@@ -19,7 +19,7 @@
 
 package edu.pdx.imagej.dynamic_parameters;
 
-import ij.gui.GenericDialog;
+import java.util.function.Supplier;
 
 import org.scijava.plugin.Plugin;
 
@@ -42,7 +42,8 @@ public class IntParameter extends AbstractDParameter<Integer> {
      * @param starting_value The value that this parameter starts at.
      * @param label The label for this parameter to be used on the dialog.
      */
-    public IntParameter(Integer starting_value, String label) {this(starting_value, label, "");}
+    public IntParameter(Integer starting_value, String label)
+        {this(starting_value, label, "");}
     /** Construct using a starting value, its label, and the units.
      *
      * @param starting_value The value that this parameter starts at.
@@ -62,7 +63,7 @@ public class IntParameter extends AbstractDParameter<Integer> {
      */
     @Override
     public Integer get_value() {return M_value;}
-    /** Sets the bounds for the value.
+    /* Sets the bounds for the value.
      * <p>
      * If the value gets outside of the interval <code>[min, max]</code>, it
      * will be treated as an error.  To have no upper bound, use
@@ -71,32 +72,34 @@ public class IntParameter extends AbstractDParameter<Integer> {
      * @param min The minimum value that this parameter should take
      * @param max The maximum value that this parameter should take
      */
-    public void set_bounds(int min, int max) {M_min = min; M_max = max; check_for_errors();}
+    public void set_bounds(int min, int max)
+    {
+        M_min = min;
+        M_max = max;
+        if (M_number != null) M_number.set_bounds(min, max);
+        check_for_errors();
+    }
 
     /** Adds this parameter to the dialog.
      */
     @Override
-    public void add_to_dialog(GenericDialog gd)
+    public void add_to_dialog(DPDialog dialog)
     {
-        gd.addNumericField(M_label, M_value, 0, 9, M_units);
+        M_number = dialog.add_integer(M_label, M_value, M_units);
+        M_number.set_bounds(M_min, M_max);
     }
     /** Reads this parameter from the dialog.
      */
     @Override
-    public void read_from_dialog(GenericDialog gd)
+    public void read_from_dialog()
     {
-        double value = gd.getNextNumber();
-        check_for_errors();
-        if (Double.isNaN(value)) {
-            set_error(M_label + " is not a number.");
-            return;
+        Integer value = M_number.get();
+        if (value == null) set_error(DParameter.display_label(M_label) + " is not an integer.");
+        else {
+            set_error(null);
+            M_value = M_number.get();
+            check_for_errors();
         }
-        if (!is_int(value)) {
-            set_error(M_label + " is not an integer.");
-            return;
-        }
-        M_value = (int)value;
-        check_for_errors();
     }
     /** Save this parameter to {@link prefs}
      */
@@ -112,30 +115,23 @@ public class IntParameter extends AbstractDParameter<Integer> {
         check_for_errors();
     }
 
-    /** Checks if a double is an integer.
-     *
-     * This is a simple utility function to determine if a double is close
-     * enough to an integer.
-     *
-     * @param value The double to check.
-     * @return Whether or not the value is an integer.
-     */
-    public static boolean is_int(double value)
-        {return Double.isFinite(value) && Double.compare(value, StrictMath.rint(value)) == 0;}
 
     private void check_for_errors()
     {
-        if (M_value < M_min || M_value > M_max) {
-            if (M_min == Integer.MIN_VALUE) set_error(M_label + " must be less than or equal to " + M_max + ".");
-            else if (M_max == Integer.MAX_VALUE) set_error(M_label + " must be greater than or equal to " + M_min + ".");
-            else set_error(M_label + " is not in the range [" + M_min + ".." + M_max + "].");
-            return;
+        if (M_number != null && get_error() == null) {
+            if (!M_number.in_bounds(M_value)) {
+                if (M_min == Integer.MIN_VALUE) set_error(DParameter.display_label(M_label) + " must be less than or equal to " + M_max + ".");
+                else if (M_max == Integer.MAX_VALUE) set_error(DParameter.display_label(M_label) + " must be greater than or equal to " + M_min + ".");
+                else set_error(DParameter.display_label(M_label) + " is not in the range [" + M_min + ".." + M_max + "].");
+                return;
+            }
+            set_error(null);
         }
-        set_error(null);
     }
     private int M_value;
     private int M_min = Integer.MIN_VALUE;
     private int M_max = Integer.MAX_VALUE;
     private String M_label;
     private String M_units;
+    private DPDialog.DialogNumber<Integer> M_number;
 }

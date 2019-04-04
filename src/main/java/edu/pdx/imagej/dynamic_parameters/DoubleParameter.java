@@ -19,7 +19,7 @@
 
 package edu.pdx.imagej.dynamic_parameters;
 
-import ij.gui.GenericDialog;
+import java.util.function.Supplier;
 
 import org.scijava.plugin.Plugin;
 
@@ -97,21 +97,33 @@ public class DoubleParameter extends AbstractDParameter<Double> {
      * @param min The minimum value that this parameter should take
      * @param max The maximum value that this parameter should take
      */
-    public void set_bounds(double min, double max) {M_min = min; M_max = max; check_for_errors();}
+    public void set_bounds(double min, double max)
+    {
+        M_min = min;
+        M_max = max;
+        if (M_number != null) M_number.set_bounds(min, max);
+        check_for_errors();
+    }
 
     /** Adds this parameter to the dialog.
      */
     @Override
-    public void add_to_dialog(GenericDialog gd)
+    public void add_to_dialog(DPDialog dialog)
     {
-        gd.addNumericField(M_label, M_value, M_decimals, 9, M_units);
+        M_number = dialog.add_double(M_label, M_value, M_units, M_decimals);
+        M_number.set_bounds(M_min, M_max);
     }
     /** Reads this parameter from the dialog.
      */
     @Override
-    public void read_from_dialog(GenericDialog gd)
+    public void read_from_dialog()
     {
-        M_value = gd.getNextNumber();
+        Double value = M_number.get();
+        if (value == null) set_error(DParameter.display_label(M_label) + " is not a number.");
+        else {
+            set_error(null);
+            M_value = M_number.get();
+        }
         check_for_errors();
     }
     /** Save this parameter to {@link prefs}
@@ -130,29 +142,31 @@ public class DoubleParameter extends AbstractDParameter<Double> {
 
     private void check_for_errors()
     {
-        if (Double.isNaN(M_value)) {
-            set_error(M_label + " is not a number.");
-            return;
-        }
-        if (M_value < M_min || M_value > M_max) {
-            boolean greater_than_zero = M_min == Double.MIN_VALUE;
-            boolean less_than_zero = M_max == -Double.MIN_VALUE;
-            boolean negative_inf = M_min == -Double.MAX_VALUE;
-            boolean positive_inf = M_max == Double.MAX_VALUE;
-            if (negative_inf) {
-                if (less_than_zero) set_error(M_label + " must be less than zero.");
-                else set_error(M_label + " must be less than or equal to " + M_max + ".");
+        if (M_number != null && get_error() == null) {
+            if (Double.isNaN(M_value)) {
+                set_error(DParameter.display_label(M_label) + " is not a number.");
+                return;
             }
-            else if (positive_inf) {
-                if (greater_than_zero) set_error(M_label + " must be greater than zero.");
-                else set_error(M_label + "must be greater than or equal to " + M_max + ".");
+            if (!M_number.in_bounds(M_value)) {
+                boolean greater_than_zero = M_min == Double.MIN_VALUE;
+                boolean less_than_zero = M_max == -Double.MIN_VALUE;
+                boolean negative_inf = M_min == -Double.MAX_VALUE;
+                boolean positive_inf = M_max == Double.MAX_VALUE;
+                if (negative_inf) {
+                    if (less_than_zero) set_error(DParameter.display_label(M_label) + " must be less than zero.");
+                    else set_error(DParameter.display_label(M_label) + " must be less than or equal to " + M_max + ".");
+                }
+                else if (positive_inf) {
+                    if (greater_than_zero) set_error(DParameter.display_label(M_label) + " must be greater than zero.");
+                    else set_error(DParameter.display_label(M_label) + "must be greater than or equal to " + M_max + ".");
+                }
+                else if (less_than_zero) set_error(DParameter.display_label(M_label) + " must be in the range [" + M_min + " .. 0).");
+                else if (greater_than_zero) set_error(DParameter.display_label(M_label) + " must be in the range (0 .. " + M_max + "].");
+                else set_error(DParameter.display_label(M_label) + " must be in the range [" + M_min + " .. " + M_max + "].");
+                return;
             }
-            else if (less_than_zero) set_error(M_label + " must be in the range [" + M_min + " .. 0).");
-            else if (greater_than_zero) set_error(M_label + " must be in the range (0 .. " + M_max + "].");
-            else set_error(M_label + " must be in the range [" + M_min + " .. " + M_max + "].");
-            return;
+            set_error(null);
         }
-        set_error(null);
     }
 
     private double M_value;
@@ -161,4 +175,5 @@ public class DoubleParameter extends AbstractDParameter<Double> {
     private String M_label;
     private String M_units;
     private int M_decimals;
+    private DPDialog.DialogNumber<Double> M_number;
 }

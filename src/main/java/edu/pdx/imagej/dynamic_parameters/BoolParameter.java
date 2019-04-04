@@ -19,7 +19,7 @@
 
 package edu.pdx.imagej.dynamic_parameters;
 
-import ij.gui.GenericDialog;
+import java.util.function.Supplier;
 
 import org.scijava.plugin.Plugin;
 
@@ -48,16 +48,16 @@ public class BoolParameter extends AbstractDParameter<Boolean> {
     /** Adds this parameter to the dialog.
      */
     @Override
-    public void add_to_dialog(GenericDialog gd)
+    public void add_to_dialog(DPDialog dialog)
     {
-        gd.addCheckbox(M_label, M_value);
+        M_supplier = dialog.add_boolean(M_label, M_value);
     }
     /** Reads this parameter from the dialog.
      */
     @Override
-    public void read_from_dialog(GenericDialog gd)
+    public void read_from_dialog()
     {
-        M_value = gd.getNextBoolean();
+        M_value = M_supplier.get();
     }
     /** Save this parameter to {@link prefs}
      */
@@ -70,4 +70,5 @@ public class BoolParameter extends AbstractDParameter<Boolean> {
 
     private String M_label;
     private boolean M_value;
+    private Supplier<Boolean> M_supplier;
 }

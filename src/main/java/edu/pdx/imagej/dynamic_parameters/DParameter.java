@@ -19,8 +19,6 @@
 
 package edu.pdx.imagej.dynamic_parameters;
 
-import ij.gui.GenericDialog;
-
 import org.scijava.Context;
 import org.scijava.Contextual;
 import net.imagej.ImageJPlugin;
@@ -69,24 +67,14 @@ public interface DParameter<T> extends Contextual, ImageJPlugin {
     String label();
     /**
      * Add this parameter to the dialog.
-     * <p>
-     * This should probably somehow call one of the add* functions of
-     * GenericDialog, either directly or by calling add_to_dialog of another
-     * parameter.
      *
-     * @param gd The <a href="https://javadoc.scijava.org/ImageJ1/ij/gui/GenericDialog.html">GenericDialog</a> to add to
+     * @param gd The {@link DPDialog} to add to.
      */
-    void add_to_dialog(GenericDialog gd);
+    void add_to_dialog(DPDialog gd);
     /**
      * Read this parameter from the dialog.
-     * <p>
-     * It should read the value from the dialog and update this parameter's
-     * state to match the value.  After this function is called,
-     * {@link get_value} should match what is on the dialog.
-     *
-     * @param gd The <a href="https://javadoc.scijava.org/ImageJ1/ij/gui/GenericDialog.html">GenericDialog</a> to read from
      */
-    void read_from_dialog(GenericDialog gd);
+    void read_from_dialog();
     /**
      * Save the value of this parameter to the preferences.
      * <p>
@@ -216,4 +204,9 @@ public interface DParameter<T> extends Contextual, ImageJPlugin {
      * @param h The {@link Harvester} that this parameter is inside.
      */
     void set_harvester(Harvester h);
+
+    static String display_label(String label)
+    {
+        return label.replace("_", " ");
+    }
 }

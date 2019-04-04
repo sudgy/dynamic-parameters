@@ -30,14 +30,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.Condition;
 
-import ij.gui.GenericDialog;
-import ij.gui.DialogListener;
-
 /** The Harvester takes in a bunch of {@link DParameter}s and populates them
  * through a dialog.  It is used by the {@link DynamicPreprocessor} and should
  * not be created manually.
  */
-public class Harvester extends WindowAdapter implements DialogListener {
+public class Harvester extends WindowAdapter {
     /** Checks if the user cancelled the dialog.
      *
      * @return <code>true</code> if the user cancelled the dialog */
@@ -81,12 +78,12 @@ public class Harvester extends WindowAdapter implements DialogListener {
     public void populate()
     {
         create_dialog();
-        GenericDialog gd = M_gd;
-        M_gd.showDialog();
-        // Because GenericDialog is modal, the dialog has now been closed.  This
+        HarvesterDialog dialog = M_dialog;
+        M_dialog.show();
+        // Because the dialog is modal, the dialog has now been closed.  This
         // could be because the user finished, or because the dialog had to be
         // recreated.  This if checks if the dialog had to be recreated.
-        if (!gd.wasCanceled() && !gd.wasOKed()) {
+        if (!dialog.was_finished()) {
             // This function shouldn't return until the user is finished.  So we
             // wait for M_finished to be true before finishing.
             synchronized(this) {
@@ -94,22 +91,20 @@ public class Harvester extends WindowAdapter implements DialogListener {
                 catch (InterruptedException e) {M_canceled = true;}
             }
         }
-        if (M_gd.wasCanceled()) M_canceled = true;
+        if (M_dialog.was_canceled()) M_canceled = true;
     }
     private void create_dialog()
     {
-        M_gd = new GenericDialog(M_name);
+        M_dialog = new HarvesterDialog(M_name);
         for (DParameter param : M_params) {
             if (param.visible()) {
-                param.add_to_dialog(M_gd);
+                param.add_to_dialog(M_dialog);
             }
         }
         // This message is the error/warning
         // Note that it does NOT get filled in right away
-        M_gd.addMessage("", Font.decode(null), Color.RED);
-        M_error_label = (Label)M_gd.getMessage();
-        M_gd.addDialogListener(this);
-        M_gd.addWindowListener(this);
+        M_error_label = M_dialog.add_message("", Color.RED);
+        M_dialog.set_harvester(this);
     }
     /** Calculate anything needed when the window is opened. */
     @Override
@@ -119,41 +114,41 @@ public class Harvester extends WindowAdapter implements DialogListener {
         // correctly when errors are present.  If an error is instantly present
         // it needs to be shown instantly, though.  This function gets the width
         // between the creation of the window and setting of the error.
-        M_gd_width = M_gd.getSize().width;
+        M_dialog_width = M_dialog.width();
         check_for_errors();
     }
     /** React to user input.  This recreates the dialog if it is needed.
      *
-     * @param gd The GenericDialog that created this event (not necessarilly
-     *           M_gd).
+     * @param dialog The dialog that created this event (not necessarilly
+     *           M_dialog).
      * @param e The event (<code>null</code> if its from pressing OK).
      * @return <code>true</code> if the dialog is in a valid state.
      */
-    @Override
-    public boolean dialogItemChanged(GenericDialog gd, AWTEvent e)
+    public boolean dialogItemChanged(HarvesterDialog dialog, Object e)
     {
         // If the user pressed okay, just don't do anything
         if (e == null) return true;
-        // If gd != M_gd, that means that this dialog is an old dialog closing.
-        // We don't want to have anything to do with it in that case.
-        if (gd == M_gd) {
+        // If dialog != M_dialog, that means that this dialog is an old dialog
+        // closing.  We don't want to have anything to do with it in that case.
+        if (dialog == M_dialog) {
             boolean reconstruction_needed = false;
             for (DParameter param : M_params) {
-                param.read_from_dialog(M_gd);
+                param.read_from_dialog();
                 if (param.visibility_changed()) {
                     reconstruction_needed = true;
                     param.refresh_visibility();
                 }
             }
             if (reconstruction_needed) {
-                M_gd.removeWindowListener(this);
-                M_gd.dispose();
+                M_dialog.remove_harvester(this);
+                M_dialog.dispose();
                 create_dialog();
-                M_gd.showDialog();
+                dialog = M_dialog;
+                M_dialog.show();
                 // Because GenericDialog is modal, the dialog has now been
                 // closed.  If it was canceled or oked, our job is done and we
                 // need to notify populate().
-                if (M_gd.wasCanceled() || M_gd.wasOKed()) {
+                if (dialog.was_finished()) {
                     synchronized(this) {
                         M_finished = true;
                         notifyAll();
@@ -166,7 +161,7 @@ public class Harvester extends WindowAdapter implements DialogListener {
             // if (!reconstruction_needed)
             else return check_for_errors();
         }
-        // if (gd != M_gd)
+        // if (dialog != M_dialog)
         else return false;
     }
     /** Check if there is any error or warning in the parameters.
@@ -185,22 +180,22 @@ public class Harvester extends WindowAdapter implements DialogListener {
         for (DParameter param : M_params) {
             error = param.get_error();
             if (error != null) {
-                M_gd.getButtons()[0].setEnabled(false);
+                M_dialog.set_enabled(false);
                 M_error_label.setText(error);
-                M_error_width = M_gd.getGraphics().getFontMetrics().stringWidth(error) + 64;
+                M_error_width = M_dialog.string_width(error) + 64;
                 resize();
                 return false;
             }
         }
         // There is no error, we can push OK (this must be here because warnings
         // need to return before the end of the function)
-        M_gd.getButtons()[0].setEnabled(true);
+        M_dialog.set_enabled(true);
         // Check warning
         for (DParameter param : M_params) {
             error = param.get_warning();
             if (error != null) {
                 M_error_label.setText(error);
-                M_error_width = M_gd.getGraphics().getFontMetrics().stringWidth(error) + 64;
+                M_error_width = M_dialog.string_width(error) + 64;
                 resize();
                 return true;
             }
@@ -213,19 +208,19 @@ public class Harvester extends WindowAdapter implements DialogListener {
     }
     private void resize()
     {
-        int width = M_gd_width > M_error_width ? M_gd_width : M_error_width;
+        int width = M_dialog_width > M_error_width ? M_dialog_width : M_error_width;
         for (DParameter param : M_params) {
             int param_width = param.width();
             width = width > param_width ? width : param_width;
         }
-        M_gd.setSize(width, M_gd.getSize().height);
+        M_dialog.set_width(width);
     }
     private String M_name;
     private DParameter<?>[] M_params;
 
-    private GenericDialog M_gd;
+    private HarvesterDialog M_dialog;
     private Label M_error_label;
-    private int M_gd_width;
+    private int M_dialog_width;
     private int M_error_width;
 
     private Lock M_finished_lock = new ReentrantLock();

@@ -19,10 +19,11 @@
 
 package edu.pdx.imagej.dynamic_parameters;
 
+import java.util.function.Supplier;
+
 import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
-import ij.gui.GenericDialog;
 
 import org.scijava.plugin.Plugin;
 
@@ -63,16 +64,16 @@ public class ImageParameter extends AbstractDParameter<ImagePlus> {
     /** Adds this parameter to the dialog.
      */
     @Override
-    public void add_to_dialog(GenericDialog gd)
+    public void add_to_dialog(DPDialog dialog)
     {
-        gd.addChoice(M_label, M_options, M_options[M_current_index]);
+        M_supplier = dialog.add_choice_index(M_label, M_options[M_current_index], M_options);
     }
     /** Reads this parameter from the dialog.
      */
     @Override
-    public void read_from_dialog(GenericDialog gd)
+    public void read_from_dialog()
     {
-        M_current_index = gd.getNextChoiceIndex();
+        M_current_index = M_supplier.get();
         M_current_id = M_id_list[M_current_index];
     }
     /** Does nothing.
@@ -105,4 +106,5 @@ public class ImageParameter extends AbstractDParameter<ImagePlus> {
     private int M_current_index = 0;
     private int M_current_id = 1;
     private boolean M_invalid = false;
+    private Supplier<Integer> M_supplier;
 }

@@ -19,7 +19,7 @@
 
 package edu.pdx.imagej.dynamic_parameters;
 
-import ij.gui.GenericDialog;
+import java.util.function.Supplier;
 
 import org.scijava.plugin.Plugin;
 
@@ -61,16 +61,16 @@ public class ChoiceParameter extends AbstractDParameter<String> {
     /** Adds this parameter to the dialog.
      */
     @Override
-    public void add_to_dialog(GenericDialog gd)
+    public void add_to_dialog(DPDialog dialog)
     {
-        gd.addChoice(M_label, M_items, M_value);
+        M_supplier = dialog.add_choice(M_label, M_value, M_items);
     }
     /** Reads this parameter from the dialog.
      */
     @Override
-    public void read_from_dialog(GenericDialog gd)
+    public void read_from_dialog()
     {
-        M_value = gd.getNextChoice();
+        M_value = M_supplier.get();
     }
     /** Save this parameter to {@link prefs}
      */
@@ -95,4 +95,5 @@ public class ChoiceParameter extends AbstractDParameter<String> {
     private String[] M_items;
     private String M_value;
     private String M_default_value;
+    private Supplier<String> M_supplier;
 }
