@@ -119,11 +119,7 @@ public class DoubleParameter extends AbstractDParameter<Double> {
     public void read_from_dialog()
     {
         Double value = M_number.get();
-        if (value == null) set_error(DParameter.display_label(M_label) + " is not a number.");
-        else {
-            set_error(null);
-            M_value = M_number.get();
-        }
+        if (value != null) M_value = M_number.get();
         check_for_errors();
     }
     /** Save this parameter to {@link prefs}
@@ -142,8 +138,8 @@ public class DoubleParameter extends AbstractDParameter<Double> {
 
     private void check_for_errors()
     {
-        if (M_number != null && get_error() == null) {
-            if (Double.isNaN(M_value)) {
+        if (M_number != null) {
+            if (M_number.get() == null) {
                 set_error(DParameter.display_label(M_label) + " is not a number.");
                 return;
             }
@@ -165,8 +161,8 @@ public class DoubleParameter extends AbstractDParameter<Double> {
                 else set_error(DParameter.display_label(M_label) + " must be in the range [" + M_min + " .. " + M_max + "].");
                 return;
             }
-            set_error(null);
         }
+        set_error(null);
     }
 
     private double M_value;
