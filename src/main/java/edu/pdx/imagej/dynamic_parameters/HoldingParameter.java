@@ -22,7 +22,7 @@ package edu.pdx.imagej.dynamic_parameters;
 import java.util.ArrayList;
 import java.lang.reflect.InvocationTargetException;
 
-import ij.gui.GenericDialog;
+import org.scijava.Context;
 
 /**
  * HoldingParameter is a dynamic parameter that contains other parameters.
@@ -205,7 +205,7 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
      *             instance of the outer class.
      * @return The new parameter.
      */
-    protected final <T extends DParameter<?>> T add_parameter(Class<T> cls, Object... args)
+    protected <T extends DParameter<?>> T add_parameter(Class<T> cls, Object... args)
     {
         Class<?>[] args_c = new Class<?>[args.length];
         if (args.length != 0) {
@@ -217,8 +217,11 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
             T result;
             if (args.length == 0) result = cls.getDeclaredConstructor().newInstance();
             else result = cls.getConstructor(args_c).newInstance(args);
-            result.setContext(context());
-            result.initialize();
+            Context context = getContext();
+            if (context != null) {
+                result.setContext(context);
+                result.initialize();
+            }
             M_params.add(result);
             return result;
         }
@@ -232,17 +235,17 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
      * @param param The parameter to remove.
      * @return <code>true</code> if the parameter was successfully removed.
      */
-    protected final boolean remove_parameter(DParameter<?> param)
+    protected boolean remove_parameter(DParameter<?> param)
         {return M_params.remove(param);}
     /** Remove a parameter by index.
      *
      * @param index The index of the parameter to remove.
      * @return The parameter that was removed.
      */
-    protected final DParameter<?> remove_parameter(int index)
+    protected DParameter<?> remove_parameter(int index)
         {return M_params.remove(index);}
     /** Remove all parameters. */
-    protected final void clear_parameters()
+    protected void clear_parameters()
         {M_params.clear();}
     private ArrayList<DParameter<?>> M_params = new ArrayList<DParameter<?>>();
 }
