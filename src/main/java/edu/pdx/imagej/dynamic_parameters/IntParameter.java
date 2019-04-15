@@ -94,12 +94,8 @@ public class IntParameter extends AbstractDParameter<Integer> {
     public void read_from_dialog()
     {
         Integer value = M_number.get();
-        if (value == null) set_error(DParameter.display_label(M_label) + " is not an integer.");
-        else {
-            set_error(null);
-            M_value = M_number.get();
-            check_for_errors();
-        }
+        if (value != null) M_value = M_number.get();
+        check_for_errors();
     }
     /** Save this parameter to {@link prefs}
      */
@@ -118,15 +114,19 @@ public class IntParameter extends AbstractDParameter<Integer> {
 
     private void check_for_errors()
     {
-        if (M_number != null && get_error() == null) {
+        if (M_number != null) {
+            if (M_number.get() == null) {
+                set_error(DParameter.display_label(M_label) + " is not an integer.");
+                return;
+            }
             if (!M_number.in_bounds(M_value)) {
                 if (M_min == Integer.MIN_VALUE) set_error(DParameter.display_label(M_label) + " must be less than or equal to " + M_max + ".");
                 else if (M_max == Integer.MAX_VALUE) set_error(DParameter.display_label(M_label) + " must be greater than or equal to " + M_min + ".");
                 else set_error(DParameter.display_label(M_label) + " is not in the range [" + M_min + ".." + M_max + "].");
                 return;
             }
-            set_error(null);
         }
+        set_error(null);
     }
     private int M_value;
     private int M_min = Integer.MIN_VALUE;
