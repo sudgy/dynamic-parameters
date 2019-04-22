@@ -76,24 +76,32 @@ public class ImageParameter extends AbstractDParameter<ImagePlus> {
         M_current_index = M_supplier.get();
         M_current_id = M_id_list[M_current_index];
     }
-    /** Does nothing.
+    /** Saves the name of this image to prefs.
      * <p>
-     * Because images are constantly changing, ImageParameter does not try to
-     * save its values between runs.
+     * This class uses the name of the image to try to remember it.
      *
      * @param c unused
      * @param name unused
      */
-    @Override public void save_to_prefs(Class<?> c, String name) {}
-    /** Does nothing.
+    @Override public void save_to_prefs(Class<?> c, String name)
+    {prefs().put(c, name, M_options[M_current_index]);}
+    /** Reads the last saved image from prefs and tries to select it again.
      * <p>
-     * Because images are constantly changing, ImageParameter does not try to
-     * save its values between runs.
+     * If the image name is not found, nothing happens.
      *
      * @param c unused
      * @param name unused
      */
-    @Override public void read_from_prefs(Class<?> c, String name) {}
+    @Override public void read_from_prefs(Class<?> c, String name)
+    {
+        String image = prefs().get(c, name);
+        for (int i = 0; i < M_options.length; ++i) {
+            if (M_options[i].equals(image)) {
+                M_current_index = i;
+                M_current_id = M_id_list[i];
+            }
+        }
+    }
     /** Determines if there were no images open during initialization.
      *
      * @return Whether or not there are no images open.
