@@ -25,12 +25,10 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import javax.swing.text.BadLocationException;
 import java.util.function.Supplier;
-import java.util.ArrayList;
-import java.text.ParseException;
+import java.text.ParsePosition;
+import java.text.DecimalFormat;
 
-import ij.IJ;
 import ij.gui.GenericDialog;
 import ij.gui.DialogListener;
 
@@ -225,6 +223,7 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener {
         {
             M_spinner = spinner;
             M_model = model;
+            M_editor = (JSpinner.NumberEditor)M_spinner.getEditor();
             M_step_size = step_size;
             listen();
         }
@@ -237,8 +236,10 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener {
         @Override
         public void set_bounds(T min, T max)
         {
+            if (get() == null) return;
             M_model = new SpinnerNumberModel(get(), min, max, M_step_size);
             M_spinner.setModel(M_model);
+            M_editor = (JSpinner.NumberEditor)M_spinner.getEditor();
             listen();
         }
         @Override public void insertUpdate(DocumentEvent ev) {document_changed(ev);}
@@ -247,12 +248,19 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener {
 
         private void document_changed(DocumentEvent ev)
         {
-            try {
-                String text = ev.getDocument().getText(0, ev.getDocument().getLength());
-                set_enabled(M_harvester.dialogItemChanged(HarvesterDialog.this, ev));
-            }
-            // Shouldn't ever happen?
-            catch (BadLocationException e) {}
+            // Because DocumentListeners may get multiple events at one time, we
+            // need a way to only check once no matter how many events we get at
+            // one time.  Using invokeLater and M_changed allows us to to that.
+            M_changed = false;
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override public void run()
+                {
+                    if (!M_changed) {
+                        set_enabled(M_harvester.dialogItemChanged(HarvesterDialog.this, ev));
+                        M_changed = true;
+                    }
+                }
+            });
         }
         private void listen()
         {
@@ -267,7 +275,9 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener {
 
         private JSpinner M_spinner;
         protected SpinnerNumberModel M_model;
+        protected JSpinner.NumberEditor M_editor;
         private T M_step_size;
+        private boolean M_changed = false;
     }
     private class DialogDouble extends DialogNum<Double> {
         public DialogDouble(JSpinner spinner, SpinnerNumberModel model, Double step_size)
@@ -281,12 +291,12 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener {
         @Override
         protected Double parse(String text)
         {
-            try {
-                return Double.valueOf(text);
-            }
-            catch (NumberFormatException e) {
-                return null;
-            }
+            DecimalFormat format = M_editor.getFormat();
+            ParsePosition pos = new ParsePosition(0);
+            Number result = format.parse(text, pos);
+            if (pos.getIndex() == 0) return null;
+            else if (pos.getIndex() != text.length()) return null;
+            else return result.doubleValue();
         }
     }
     private class DialogInt extends DialogNum<Integer> {
@@ -301,12 +311,12 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener {
         @Override
         protected Integer parse(String text)
         {
-            try {
-                return Integer.valueOf(text);
-            }
-            catch (NumberFormatException e) {
-                return null;
-            }
+            DecimalFormat format = M_editor.getFormat();
+            ParsePosition pos = new ParsePosition(0);
+            Number result = format.parse(text, pos);
+            if (pos.getIndex() == 0) return null;
+            else if (pos.getIndex() != text.length()) return null;
+            else return result.intValue();
         }
     }
 }

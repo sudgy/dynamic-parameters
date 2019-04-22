@@ -51,7 +51,8 @@ public interface DPDialog {
         public boolean in_bounds(T value);
         /** Set the bounds for this number.  This will affect calls to
          * <code>in_bounds</code>, and it can also possibly affect the dialog as
-         * well.
+         * well.  Because of how much it can change, you should only ever call
+         * it when absolutely necessary.
          *
          * @param min The minimum value this number can take.
          * @param max The maximum value this number can take.
