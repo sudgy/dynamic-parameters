@@ -144,6 +144,18 @@ public interface DParameter<T> extends Contextual, ImageJPlugin {
      * This function should only be called by the {@link Harvester}.
      */
     void refresh_visibility();
+    /** Checks if the parameter has changed enough that the dialog must be
+     * recreated.
+     * <p>
+     * Reconstruction can most of the time be handled by the visibility
+     * functions, but if your parameter needs to stay visible while still being
+     * recreated, use this.
+     * <p>
+     * Note: This function should only be called bye the {@link Harvester}.
+     *
+     * @return If the parameter needs to be reconstructed.
+     */
+    boolean reconstruction_needed();
     /**
      * The width that this parameter needs on the dialog, if needed.
      * <p>

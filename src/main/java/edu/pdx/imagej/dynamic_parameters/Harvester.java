@@ -138,6 +138,9 @@ public class Harvester extends WindowAdapter {
                     reconstruction_needed = true;
                     param.refresh_visibility();
                 }
+                if (param.reconstruction_needed()) {
+                    reconstruction_needed = true;
+                }
             }
             if (reconstruction_needed) {
                 M_dialog.remove_harvester(this);

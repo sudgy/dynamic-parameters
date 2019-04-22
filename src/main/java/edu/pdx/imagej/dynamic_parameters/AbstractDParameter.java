@@ -76,6 +76,11 @@ public abstract class AbstractDParameter<T> extends AbstractRichPlugin implement
     @Override public void refresh_visibility() {M_visible = M_new_visible;}
     /** {@inheritDoc}
      * <p>
+     * This function defaults to returning <code>false</code>.
+     */
+    @Override public boolean reconstruction_needed() {return false;}
+    /** {@inheritDoc}
+     * <p>
      * This function defaults to returning zero.
      */
     @Override public int width() {return 0;}
