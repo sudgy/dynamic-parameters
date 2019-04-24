@@ -101,7 +101,10 @@ public class DoubleParameter extends AbstractDParameter<Double> {
     {
         M_min = min;
         M_max = max;
-        if (M_number != null) M_number.set_bounds(min, max);
+        if (M_number != null) {
+            M_number.set_bounds(min, max);
+            M_value = M_number.get();
+        }
         check_for_errors();
     }
 
@@ -112,6 +115,8 @@ public class DoubleParameter extends AbstractDParameter<Double> {
     {
         M_number = dialog.add_double(M_label, M_value, M_units, M_decimals);
         M_number.set_bounds(M_min, M_max);
+        M_value = M_number.get();
+        check_for_errors();
     }
     /** Reads this parameter from the dialog.
      */

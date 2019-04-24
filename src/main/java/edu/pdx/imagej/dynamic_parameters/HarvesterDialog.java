@@ -236,8 +236,10 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener {
         @Override
         public void set_bounds(T min, T max)
         {
-            if (get() == null) return;
-            M_model = new SpinnerNumberModel(get(), min, max, M_step_size);
+            T value = get();
+            if (value == null) return;
+            M_model = new SpinnerNumberModel(min, min, max, M_step_size);
+            if (in_bounds(value)) M_model.setValue(value);
             M_spinner.setModel(M_model);
             M_editor = (JSpinner.NumberEditor)M_spinner.getEditor();
             listen();

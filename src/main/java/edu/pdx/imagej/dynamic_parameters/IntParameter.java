@@ -76,7 +76,10 @@ public class IntParameter extends AbstractDParameter<Integer> {
     {
         M_min = min;
         M_max = max;
-        if (M_number != null) M_number.set_bounds(min, max);
+        if (M_number != null) {
+            M_number.set_bounds(min, max);
+            M_value = M_number.get();
+        }
         check_for_errors();
     }
 
@@ -87,6 +90,8 @@ public class IntParameter extends AbstractDParameter<Integer> {
     {
         M_number = dialog.add_integer(M_label, M_value, M_units);
         M_number.set_bounds(M_min, M_max);
+        M_value = M_number.get();
+        check_for_errors();
     }
     /** Reads this parameter from the dialog.
      */
