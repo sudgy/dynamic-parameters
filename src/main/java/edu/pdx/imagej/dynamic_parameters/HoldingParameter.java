@@ -217,18 +217,31 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
             T result;
             if (args.length == 0) result = cls.getDeclaredConstructor().newInstance();
             else result = cls.getConstructor(args_c).newInstance(args);
-            Context context = getContext();
-            if (context != null) {
-                result.setContext(context);
-                result.initialize();
-            }
-            M_params.add(result);
+            add_premade_parameter(result);
             return result;
         }
         catch (NoSuchMethodException e) {throw new RuntimeException(e);}
         catch (InstantiationException e) {throw new RuntimeException(e);}
         catch (IllegalAccessException e) {throw new RuntimeException(e);}
         catch (InvocationTargetException e) {throw new RuntimeException(e);}
+    }
+    /** Add a pre-made parameter to this parameter.
+     * <p>
+     * If you are unable to use {@link add_parameter} for any reason, use this
+     * function to add the parameter and still do all of the initialization that
+     * add_parameter does.  You may not pass in a parameter that already has a
+     * context.
+     *
+     * @param param The parameter to add.
+     */
+    protected void add_premade_parameter(DParameter param)
+    {
+        Context context = getContext();
+        if (context != null) {
+            param.setContext(context);
+            param.initialize();
+        }
+        M_params.add(param);
     }
     /** Remove a parameter by value.
      *
