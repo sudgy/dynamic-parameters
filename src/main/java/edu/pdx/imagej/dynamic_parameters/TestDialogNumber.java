@@ -19,9 +19,25 @@
 
 package edu.pdx.imagej.dynamic_parameters;
 
-import java.util.function.Supplier;
-
-public class TestSupplier<T> implements Supplier<T> {
+/** TestDialogNumber is a simple implementation of {@link DPDialog.DialogNumber}
+ * that allows the programmer to change the value at will.
+ */
+public class TestDialogNumber<T extends Number & Comparable<T>> implements DPDialog.DialogNumber<T> {
+    /** The value this dialog number contains.  You may change it to whatever
+     * you wish, but you must call {@link DParameter#read_from_dialog} before
+     * the parameter's value will actually change.
+     */
     public T value;
-    @Override public T get() {return value;}
+    /** {@inheritDoc} */ @Override
+    public T get() {return value;}
+    /** {@inheritDoc} */ @Override
+    public boolean in_bounds(T value)
+    {
+        return (value.compareTo(M_min) >= 0 && value.compareTo(M_max) <= 0);
+    }
+    /** {@inheritDoc} */
+    @Override public void set_bounds(T min, T max) {M_min = min; M_max = max;}
+
+    private T M_min;
+    private T M_max;
 }
