@@ -19,6 +19,8 @@
 
 package edu.pdx.imagej.dynamic_parameters;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.function.Supplier;
 
 import ij.IJ;
@@ -43,30 +45,77 @@ public class ImageParameter extends AbstractDParameter<ImagePlus> {
     {
         super(label);
         M_label = label;
-        M_id_list = WindowManager.getIDList();
-        if (M_id_list == null) {
+        int[] id_list = WindowManager.getIDList();
+        if (id_list == null) {
             M_invalid = true;
             set_error("At least one image must be open.");
             return;
         }
-        M_options = new String[M_id_list.length];
-        for (int i = 0; i < M_id_list.length; ++i) {
-            M_options[i] = String.valueOf(i + 1) + ": " + WindowManager.getImage(M_id_list[i]).getTitle();
+        M_options = new String[id_list.length];
+        M_images = new ImagePlus[id_list.length];
+        for (int i = 0; i < id_list.length; ++i) {
+            M_images[i]  = WindowManager.getImage(id_list[i]);
+            M_options[i] = String.valueOf(i+1) + ": " + M_images[i].getTitle();
         }
+    }
+    /** Constructor with a custom image list.
+     * <p>
+     * This constructor takes in all of the possible images rather than using
+     * ImageJ1's WindowManager.  It can be useful if you have certain images
+     * that you want to pick from, or if you want to do something when
+     * WindowManager won't work, like in a testing environment.
+     *
+     * @param label The label for this parameter to be used on the dialog.
+     * @param images A Collection of images that can be selected.
+     */
+    public ImageParameter(String label, Collection<ImagePlus> images)
+    {
+        super(label);
+        M_label = label;
+        if (images.isEmpty()) {
+            M_invalid = true;
+            set_error("At least one image must be passed to the parameter "
+                + DParameter.display_label(label) + ".");
+        }
+        M_options = new String[images.size()];
+        M_images  = new ImagePlus[M_options.length];
+        int i = 0;
+        for (ImagePlus imp : images) {
+            M_images[i]  = imp;
+            M_options[i] = imp.getTitle();
+            ++i;
+        }
+    }
+    /** Constructor with a custom image list.
+     * <p>
+     * This is an overload that directly calls
+     * {@link ImageParameter(String, Collection)}, provided for convenience.
+     *
+     * @param label The label for this parameter to be used on the dialog.
+     * @param images An array of images that can be selected.
+     */
+    public ImageParameter(String label, ImagePlus[] images)
+    {
+        this(label, Arrays.asList(images));
     }
     /** Gets the ImagePlus from this parameter.
      *
      * @return The ImagePlus from this parameter
      */
     @Override
-    public ImagePlus get_value() {return WindowManager.getImage(M_current_id);}
+    public ImagePlus get_value()
+    {
+        return M_images[M_current_index];
+    }
 
     /** Adds this parameter to the dialog.
      */
     @Override
     public void add_to_dialog(DPDialog dialog)
     {
-        M_supplier = dialog.add_choice_index(M_label, M_options[M_current_index], M_options);
+        M_supplier = dialog.add_choice_index(M_label,
+                                             M_options[M_current_index],
+                                             M_options);
     }
     /** Reads this parameter from the dialog.
      */
@@ -74,7 +123,6 @@ public class ImageParameter extends AbstractDParameter<ImagePlus> {
     public void read_from_dialog()
     {
         M_current_index = M_supplier.get();
-        M_current_id = M_id_list[M_current_index];
     }
     /** Saves the name of this image to prefs.
      * <p>
@@ -98,7 +146,6 @@ public class ImageParameter extends AbstractDParameter<ImagePlus> {
         for (int i = 0; i < M_options.length; ++i) {
             if (M_options[i].equals(image)) {
                 M_current_index = i;
-                M_current_id = M_id_list[i];
             }
         }
     }
@@ -108,11 +155,10 @@ public class ImageParameter extends AbstractDParameter<ImagePlus> {
      */
     @Override public boolean invalid() {return M_invalid;}
 
-    private String M_label;
-    private int[] M_id_list;
-    private String[] M_options;
-    private int M_current_index = 0;
-    private int M_current_id = 1;
-    private boolean M_invalid = false;
+    private String            M_label;
+    private ImagePlus[]       M_images;
+    private String[]          M_options;
+    private int               M_current_index = 0;
+    private boolean           M_invalid = false;
     private Supplier<Integer> M_supplier;
 }
