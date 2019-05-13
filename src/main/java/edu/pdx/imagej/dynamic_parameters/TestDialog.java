@@ -45,7 +45,8 @@ import java.awt.Label;
  * index relates to the order that parameters were added.  If you have only
  * added one parameter, the index should be zero.  If you called
  * {@link add_integer add_integer} three times, to get the last one the index
- * should be two.  Each type of index is tracked separately.
+ * should be two.  Each type of index is tracked separately.  However, choices,
+ * radio boxes, and text boxes are considered identical and they share indices.
  */
 public class TestDialog implements DPDialog {
     /** {@inheritDoc} */ @Override
@@ -78,22 +79,45 @@ public class TestDialog implements DPDialog {
     public DialogNumber<Integer> add_integer(String label, int default_value,
                                              String units)
         {return add_number(default_value, M_integers);}
-    /** {@inheritDoc} */ @Override
+    /** Does nothing.  Because TestDialog doesn't actually do anything
+     * gui-related, this function does nothing.
+     *
+     * @param panel A Panel that won't actually get added.
+     */
+    @Override
     public void add_panel(Panel panel) {}
     /** {@inheritDoc} */ @Override
     public Supplier<String> add_radio_buttons(String label,
                                               String default_value,
                                               String[] choices,
                                               int rows, int columns)
-        {return null;}
+        {return add(default_value, M_strings);}
     /** {@inheritDoc} */ @Override
     public Supplier<String> add_text_box(String label, String default_value)
-        {return null;}
-    /** {@inheritDoc} */ @Override
-    public Label add_message(String Message) {return null;}
-    /** {@inheritDoc} */ @Override
+        {return add(default_value, M_strings);}
+    /** Does nothing.  Because TestDialog doesn't actually do anything
+     * gui-related, this function does nothing.
+     *
+     * @param message A message that won't be displayed.
+     * @return <code>null</code>.
+     */
+    @Override
+    public Label add_message(String message) {return null;}
+    /** Does nothing.  Because TestDialog doesn't actually do anything
+     * gui-related, this function does nothing.
+     *
+     * @param message A message that won't be displayed.
+     * @return <code>null</code>.
+     */
+    @Override
     public Label add_message(String message, Color color) {return null;}
-    /** {@inheritDoc} */ @Override
+    /** Does nothing.  Because TestDialog doesn't actually do anything
+     * gui-related, this function does nothing.
+     *
+     * @param string A useless string.
+     * @return -1.
+     */
+    @Override
     public int string_width(String string) {return -1;}
 
     /** Get a boolean from the dialog.
@@ -104,7 +128,8 @@ public class TestDialog implements DPDialog {
      */
     public TestSupplier<Boolean> get_boolean(int index)
         {return M_booleans.get(index);}
-    /** Get a string from the dialog.
+    /** Get a string from the dialog.  It could have been added with
+     * {@link add_choice}, {@link add_radio_buttons}, or {@link add_text_box}.
      *
      * @param index The index of the string you want to get.
      * @return A {@link TestSupplier TestSupplier&lt;String&gt;} that you can
