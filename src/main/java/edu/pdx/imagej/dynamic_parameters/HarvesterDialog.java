@@ -37,7 +37,7 @@ import ij.gui.DialogListener;
  * parameters.  Because its constructor is package private, users should never
  * need to create this class or use any of it.
  */
-class HarvesterDialog implements DPDialog, DialogListener, ChangeListener {
+class HarvesterDialog implements DPDialog, DialogListener, ChangeListener, FocusListener {
     // All of these functions are really simple.  No comments for you.
     HarvesterDialog(String name)
     {
@@ -96,6 +96,13 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener {
     {
         set_enabled(M_harvester.dialogItemChanged(this, e));
     }
+    @Override
+    public void focusGained(FocusEvent e) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override public void run() {((TextField)e.getComponent()).selectAll();}
+        });
+	}
+    @Override public void focusLost(FocusEvent e) {}
     /** {@inheritDoc} */
     @Override
     public Supplier<Boolean> add_boolean(String label, boolean default_value)
@@ -171,6 +178,7 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener {
         ++gridy;
         M_gd.addStringField(label, default_value);
         TextField text = (TextField)M_gd.getStringFields().lastElement();
+        text.addFocusListener(this);
         return () -> text.getText();
     }
     /** {@inheritDoc} */
@@ -218,7 +226,7 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener {
     private Harvester M_harvester;
     private int gridy;
 
-    private abstract class DialogNum<T extends Number & Comparable<T>> implements DialogNumber<T>, DocumentListener {
+    private abstract class DialogNum<T extends Number & Comparable<T>> implements DialogNumber<T>, DocumentListener, FocusListener {
         public DialogNum(JSpinner spinner, SpinnerNumberModel model, T step_size)
         {
             M_spinner = spinner;
@@ -244,6 +252,14 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener {
             M_editor = (JSpinner.NumberEditor)M_spinner.getEditor();
             listen();
         }
+        @Override
+        public void focusGained(FocusEvent e)
+        {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override public void run() {get_text_field().selectAll();}
+            });
+        }
+        @Override public void focusLost(FocusEvent e) {}
         @Override public void insertUpdate(DocumentEvent ev) {document_changed(ev);}
         @Override public void removeUpdate(DocumentEvent ev) {document_changed(ev);}
         @Override public void changedUpdate(DocumentEvent ev) {document_changed(ev);}
@@ -267,6 +283,7 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener {
         private void listen()
         {
             get_text_field().getDocument().addDocumentListener(this);
+            get_text_field().addFocusListener(this);
         }
         private JTextField get_text_field()
         {
