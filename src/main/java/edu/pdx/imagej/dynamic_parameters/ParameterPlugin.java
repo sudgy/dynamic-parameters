@@ -24,7 +24,7 @@ import org.scijava.plugin.SciJavaPlugin;
 
 /** ParameterPlugin is an interface for Plugins that have a {@link DParameter}.
  * The main reason to use this interface is to allow use with
- * TODO.  See the documentation for that class for more
+ * {@link PluginParameter}.  See the documentation for that class for more
  * information on how to use it.
  */
 public interface ParameterPlugin extends SciJavaPlugin, Prioritized {

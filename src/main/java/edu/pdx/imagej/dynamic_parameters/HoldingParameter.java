@@ -33,7 +33,8 @@ import org.scijava.Context;
  * <p>
  * To use it, extend from it and then always use {@link add_parameter} to
  * add parameters.  You may not add parameters in the constructor, and you
- * should instead add them in {@link initialize}.
+ * should instead add them in {@link initialize}.  If you want to see an example
+ * of using this class, see the source for {@link PluginParameter}.
  */
 public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
     /** Constructs a HoldingParameter with a given label.
