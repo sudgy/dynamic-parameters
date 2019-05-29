@@ -261,5 +261,13 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
     /** Remove all parameters. */
     protected void clear_parameters()
         {M_params.clear();}
+    /** Get all of the plugins that are in this plugin.
+     *
+     * @return An Iterable that iterates through all of the plugins.
+     */
+    protected Iterable<DParameter<?>> get_all_params()
+    {
+        return M_params;
+    }
     private ArrayList<DParameter<?>> M_params = new ArrayList<DParameter<?>>();
 }

@@ -111,6 +111,15 @@ public class PluginParameter<T extends ParameterPlugin>
         else return M_plugins.get(M_choice.get_value());
     }
 
+    /** Get all of the plugins that are being selected from.
+     *
+     * @return An Iterable that iterates through all of the plugins.
+     */
+    public Iterable<T> get_all_plugins()
+    {
+        return M_plugins.values();
+    }
+
     private void set_visibilities()
     {
         if (M_choice == null) return; // If only one choice
