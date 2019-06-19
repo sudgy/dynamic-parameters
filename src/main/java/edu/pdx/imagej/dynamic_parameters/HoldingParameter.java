@@ -20,6 +20,7 @@
 package edu.pdx.imagej.dynamic_parameters;
 
 import java.util.ArrayList;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import org.scijava.Context;
@@ -216,8 +217,9 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
         }
         try {
             T result;
-            if (args.length == 0) result = cls.getDeclaredConstructor().newInstance();
-            else result = cls.getConstructor(args_c).newInstance(args);
+            Constructor<T> constr = cls.getConstructor(args_c);
+            constr.setAccessible(true);
+            result = constr.newInstance(args);
             add_premade_parameter(result);
             return result;
         }
