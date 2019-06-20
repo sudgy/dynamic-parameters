@@ -30,7 +30,10 @@ import ij.WindowManager;
 import org.scijava.plugin.Plugin;
 
 /** ImageParameter is a {@link DParameter} that gets an ImagePlus from the
- * currently open images.
+ * currently open images.  {@link invalid} will return <code>true</code> if
+ * there are no images open.  However, all of the methods in this class can
+ * still be called, and they will all be no-ops (and return <code>null</code> if
+ * it has to).
  */
 @Plugin(type = DParameter.class)
 public class ImageParameter extends AbstractDParameter<ImagePlus> {
@@ -105,7 +108,8 @@ public class ImageParameter extends AbstractDParameter<ImagePlus> {
     @Override
     public ImagePlus get_value()
     {
-        return M_images[M_current_index];
+        if (M_images == null) return null;
+        else return M_images[M_current_index];
     }
 
     /** Adds this parameter to the dialog.
@@ -113,6 +117,7 @@ public class ImageParameter extends AbstractDParameter<ImagePlus> {
     @Override
     public void add_to_dialog(DPDialog dialog)
     {
+        if (M_images == null) return;
         M_supplier = dialog.add_choice_index(M_label,
                                              M_options[M_current_index],
                                              M_options);
@@ -122,6 +127,7 @@ public class ImageParameter extends AbstractDParameter<ImagePlus> {
     @Override
     public void read_from_dialog()
     {
+        if (M_images == null) return;
         M_current_index = M_supplier.get();
     }
     /** Saves the name of this image to prefs.
@@ -132,7 +138,10 @@ public class ImageParameter extends AbstractDParameter<ImagePlus> {
      * @param name unused
      */
     @Override public void save_to_prefs(Class<?> c, String name)
-    {prefs().put(c, name, M_options[M_current_index]);}
+    {
+        if (M_images == null) return;
+        prefs().put(c, name, M_options[M_current_index]);
+    }
     /** Reads the last saved image from prefs and tries to select it again.
      * <p>
      * If the image name is not found, nothing happens.
@@ -142,6 +151,7 @@ public class ImageParameter extends AbstractDParameter<ImagePlus> {
      */
     @Override public void read_from_prefs(Class<?> c, String name)
     {
+        if (M_images == null) return;
         String image = prefs().get(c, name);
         for (int i = 0; i < M_options.length; ++i) {
             if (M_options[i].equals(image)) {
