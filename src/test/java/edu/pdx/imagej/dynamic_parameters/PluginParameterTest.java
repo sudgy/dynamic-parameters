@@ -28,11 +28,12 @@ import org.scijava.Priority;
 import org.scijava.plugin.AbstractRichPlugin;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
+import org.scijava.prefs.PrefService;
 
 public class PluginParameterTest {
     @Test public void test_single()
     {
-        Context context = new Context(PluginService.class);
+        Context context = new Context(PluginService.class, PrefService.class);
         PluginParameter<TestPluginType2> param
             = new PluginParameter<>("", TestPluginType2.class);
         context.inject(param);
@@ -49,10 +50,11 @@ public class PluginParameterTest {
     }
     @Test public void test_multi()
     {
-        Context context = new Context(PluginService.class);
+        Context context = new Context(PluginService.class, PrefService.class);
         PluginParameter<TestPluginType1> param
             = new PluginParameter<>("", TestPluginType1.class);
         context.inject(param);
+        param.set_enabled(TestPlugin1.class, true);
         param.initialize();
 
         TestDialog dialog = new TestDialog();
@@ -72,10 +74,11 @@ public class PluginParameterTest {
     }
     @Test public void test_sub_param()
     {
-        Context context = new Context(PluginService.class);
+        Context context = new Context(PluginService.class, PrefService.class);
         PluginParameter<TestPluginType1> param
             = new PluginParameter<>("", TestPluginType1.class);
         context.inject(param);
+        param.set_enabled(TestPlugin1.class, true);
         param.initialize();
         param.refresh_visibility();
 
@@ -112,5 +115,29 @@ public class PluginParameterTest {
         assertTrue(param.get_value() instanceof TestPlugin4, "PluginParameter "
             + "should work correctly even if the current plugin has no "
             + "parameter.");
+    }
+    @Test public void test_enabled()
+    {
+        Context context = new Context(PluginService.class, PrefService.class);
+        PluginParameter<TestPluginType1> param
+            = new PluginParameter<>("", TestPluginType1.class);
+        context.inject(param);
+        param.set_enabled(TestPlugin1.class, false);
+        param.initialize();
+        TestDialog dialog = new TestDialog();
+        param.add_to_dialog(dialog);
+        dialog.get_string(0).value = "1";
+        param.read_from_dialog();
+        assertTrue(param.get_value() == null);
+
+        param = new PluginParameter<>("", TestPluginType1.class);
+        context.inject(param);
+        param.set_enabled(TestPlugin1.class, true);
+        param.initialize();
+        dialog = new TestDialog();
+        param.add_to_dialog(dialog);
+        dialog.get_string(0).value = "1";
+        param.read_from_dialog();
+        assertTrue(param.get_value() != null);
     }
 }

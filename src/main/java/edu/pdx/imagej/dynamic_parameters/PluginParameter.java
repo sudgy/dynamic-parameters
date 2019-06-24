@@ -28,6 +28,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.plugin.Parameter;
+import org.scijava.prefs.PrefService;
 
 /** PluginParameter is a class that that lets you choose from several plugins.
  * To use it, make your own custom plugin type that extends from
@@ -59,17 +60,20 @@ public class PluginParameter<T extends ParameterPlugin>
         super(label);
         M_class = cls;
     }
-    /** Create all of the parameters and plugins.  This will find all plugins
-     * that have type T and create them all, and then create and add a choice
-     * parameter and all of the parameters for each plugin.
+    /** Create all of the parameters and plugins.  This will find all enabled
+     * plugins that have type T and create them all, and then create and add a
+     * choice parameter and all of the parameters for each plugin.
      */
     @Override
     public void initialize()
     {
         for (PluginInfo<T> info : P_plugin_service.getPluginsOfType(M_class)) {
-            String name = info.getName();
-            if (name == null || name.isEmpty()) name = info.getClassName();
-            M_plugins.put(name, P_plugin_service.createInstance(info));
+            if (P_prefs.getBoolean(PluginParameter.class, info.getClassName(),
+                                   true)) {
+                String name = info.getName();
+                if (name == null || name.isEmpty()) name = info.getClassName();
+                M_plugins.put(name, P_plugin_service.createInstance(info));
+            }
         }
         if (M_plugins.size() > 1) {
             String[] choices = new String[M_plugins.size()];
@@ -120,6 +124,32 @@ public class PluginParameter<T extends ParameterPlugin>
         return M_plugins.values();
     }
 
+    /** Enable or disable a plugin.  If a plugin is disabled, it cannot be
+     * chosen.  If you wish to enable/disable a plugin without an instance of
+     * <code>PluginParameter</code>, you can use {@link set_enabled(PrefService,
+     * Class, boolean) set_enabled(PrefService, Class&lt;?&gt;, boolean)}.
+     *
+     * @param plugin The class for the plugin type to enable/disable.
+     * @param enabled The new value for the enabled status of the plugin.
+     */
+    public void set_enabled(Class<? extends T> plugin, boolean enabled)
+    {
+        set_enabled(P_prefs, plugin, enabled);
+    }
+    /** Enable or disable a plugin.  If a plugin is disabled, it cannot be
+     * chosen.
+     *
+     * @param prefs The <code>PrefService</code> to use to save the enabled
+     *              value.
+     * @param plugin The class for the plugin type to enable/disable.
+     * @param enabled The new value for the enabled status of the plugin.
+     */
+    public static void set_enabled(PrefService prefs, Class<?> plugin,
+                                   boolean enabled)
+    {
+        prefs.put(PluginParameter.class, plugin.getName(), enabled);
+    }
+
     private void set_visibilities()
     {
         if (M_choice == null) return; // If only one choice
@@ -136,4 +166,5 @@ public class PluginParameter<T extends ParameterPlugin>
     private HashMap<String, DParameter> M_parameters = new HashMap<>();
 
     @Parameter private PluginService P_plugin_service;
+    @Parameter private PrefService P_prefs;
 }
