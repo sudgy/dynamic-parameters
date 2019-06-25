@@ -166,7 +166,7 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener, Focus
     @Override
     public Supplier<String> add_radio_buttons(String label, String default_value, String[] choices, int rows, int columns)
     {
-        ++gridy;
+        gridy += 2;
         M_gd.addRadioButtonGroup(label, choices, rows, columns, default_value);
         CheckboxGroup radio = (CheckboxGroup)M_gd.getRadioButtonGroups().lastElement();
         return () -> radio.getSelectedCheckbox().getLabel();
