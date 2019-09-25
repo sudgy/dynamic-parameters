@@ -81,13 +81,14 @@ public class PluginParameter<T extends ParameterPlugin>
             for (String name : M_plugins.keySet()) {
                 choices[i++] = name;
             }
-            M_choice = addParameter(ChoiceParameter.class, label(),
-                                     choices, choices[0]);
+            M_choice = addParameter(
+                new ChoiceParameter(label(), choices, choices[0])
+            );
         }
         for (Entry<String, T> entry : M_plugins.entrySet()) {
             if (entry.getValue().param() != null) {
                 M_parameters.put(entry.getKey(), entry.getValue().param());
-                addPremadeParameter(entry.getValue().param());
+                addParameter(entry.getValue().param());
             }
         }
         setVisibilities();

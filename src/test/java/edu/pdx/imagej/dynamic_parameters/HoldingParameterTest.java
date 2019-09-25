@@ -27,8 +27,8 @@ public class HoldingParameterTest {
     @Test public void testAddToDialog()
     {
         TestHoldingParameter hold = new TestHoldingParameter();
-        TestParameter param1 = hold.addParameter(TestParameter.class);
-        TestParameter param2 = hold.addParameter(TestParameter.class);
+        TestParameter param1 = hold.addParameter(new TestParameter());
+        TestParameter param2 = hold.addParameter(new TestParameter());
         param2.setNewVisibility(false);
         param2.refreshVisibility();
         hold.addToDialog(null);
@@ -38,8 +38,8 @@ public class HoldingParameterTest {
     @Test public void testReadFromDialog()
     {
         TestHoldingParameter hold = new TestHoldingParameter();
-        TestParameter param1 = hold.addParameter(TestParameter.class);
-        TestParameter param2 = hold.addParameter(TestParameter.class);
+        TestParameter param1 = hold.addParameter(new TestParameter());
+        TestParameter param2 = hold.addParameter(new TestParameter());
         param2.setNewVisibility(false);
         param2.refreshVisibility();
         hold.readFromDialog();
@@ -49,8 +49,8 @@ public class HoldingParameterTest {
     @Test public void testSaveToPrefs()
     {
         TestHoldingParameter hold = new TestHoldingParameter();
-        TestParameter param1 = hold.addParameter(TestParameter.class);
-        TestParameter param2 = hold.addParameter(TestParameter.class);
+        TestParameter param1 = hold.addParameter(new TestParameter());
+        TestParameter param2 = hold.addParameter(new TestParameter());
         param2.setNewVisibility(false);
         param2.refreshVisibility();
         hold.saveToPrefs(null, null);
@@ -60,8 +60,8 @@ public class HoldingParameterTest {
     @Test public void testReadFromPrefs()
     {
         TestHoldingParameter hold = new TestHoldingParameter();
-        TestParameter param1 = hold.addParameter(TestParameter.class);
-        TestParameter param2 = hold.addParameter(TestParameter.class);
+        TestParameter param1 = hold.addParameter(new TestParameter());
+        TestParameter param2 = hold.addParameter(new TestParameter());
         param2.setNewVisibility(false);
         param2.refreshVisibility();
         hold.readFromPrefs(null, null);
@@ -71,8 +71,8 @@ public class HoldingParameterTest {
     @Test public void testError()
     {
         TestHoldingParameter hold = new TestHoldingParameter();
-        TestParameter param1 = hold.addParameter(TestParameter.class);
-        TestParameter param2 = hold.addParameter(TestParameter.class);
+        TestParameter param1 = hold.addParameter(new TestParameter());
+        TestParameter param2 = hold.addParameter(new TestParameter());
         param2.setNewVisibility(false);
         param2.refreshVisibility();
 
@@ -96,7 +96,7 @@ public class HoldingParameterTest {
     private static class TestHoldingParameter extends HoldingParameter<Boolean> {
         public TestHoldingParameter() {super("");}
         @Override public Boolean getValue() {return null;}
-        @Override public <T extends DParameter<?>> T addParameter(Class<T> cls, Object... args) {return super.addParameter(cls, args);}
+        @Override public <T extends DParameter<?>> T addParameter(T param) {return super.addParameter(param);}
         @Override public boolean removeParameter(DParameter<?> param) {return super.removeParameter(param);}
         @Override public DParameter<?> removeParameter(int index) {return super.removeParameter(index);}
         @Override public void clearParameters() {super.clearParameters();}

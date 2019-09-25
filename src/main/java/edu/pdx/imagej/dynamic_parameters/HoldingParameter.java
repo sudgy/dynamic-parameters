@@ -194,50 +194,18 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
      * There are many things that need to happen to a new parameter, so this
      * function is required to create any parameters that need to be visible.
      * This function will set the context and initialize the new parameter.
-     * If any kind of error happens in initialization (wrong arguments, illegal
-     * access, etc.) the exception is converted to a {@link RuntimeException}
-     * and rethrown.
-     *
-     *
-     * @param <T> The type of the new parameter to create.  It can be determined
-     *            through the <code>cls</code> parameter.
-     * @param cls The class of the new parameter to create.
-     * @param args The arguments to the class constructor.  If creating a
-     *             non-static inner class, the first argument must be an
-     *             instance of the outer class.
-     * @return The new parameter.
-     */
-    protected <T extends DParameter<?>> T addParameter(Class<T> cls, Object... args)
-    {
-        Class<?>[] argsC = new Class<?>[args.length];
-        if (args.length != 0) {
-            for (int i = 0; i < args.length; ++i) {
-                argsC[i] = args[i].getClass();
-            }
-        }
-        try {
-            T result;
-            Constructor<T> constr = cls.getConstructor(argsC);
-            constr.setAccessible(true);
-            result = constr.newInstance(args);
-            addPremadeParameter(result);
-            return result;
-        }
-        catch (NoSuchMethodException e) {throw new RuntimeException(e);}
-        catch (InstantiationException e) {throw new RuntimeException(e);}
-        catch (IllegalAccessException e) {throw new RuntimeException(e);}
-        catch (InvocationTargetException e) {throw new RuntimeException(e);}
-    }
-    /** Add a pre-made parameter to this parameter.
+     * Do not try to do anything with a parameter other than construct it until
+     * you have called this function.
      * <p>
-     * If you are unable to use {@link addParameter} for any reason, use this
-     * function to add the parameter and still do all of the initialization that
-     * addParameter does.  You may not pass in a parameter that already has a
-     * context.
+     * If you used versions older than 2.0, this used to be
+     * <code>add_premade_parameter</code>.
      *
-     * @param param The parameter to add.
+     * @param <T> The type of parameter to add, which should be inferred.
+     * @param param The paramater to add.
+     * @return The parameter passed in.  This is to allow for code like
+     *         <code>myParam = addParameter(new MyParamType(...));</code>.
      */
-    protected void addPremadeParameter(DParameter param)
+    protected <T extends DParameter<?>> T addParameter(T param)
     {
         Context context = getContext();
         if (context != null) {
@@ -245,6 +213,7 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
             param.initialize();
         }
         M_params.add(param);
+        return param;
     }
     /** Remove a parameter by value.
      *
