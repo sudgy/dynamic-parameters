@@ -31,7 +31,7 @@ the DParameter interface.  The DynamicPreprocessor class will find all of these
 parameters and make a dialog for them.  (Note that this is separate from the
 normal populating of parameters, so if you have a mixture of normal parameters
 and dynamic parameters, two dialogs will show.)  DParameter is a generic type,
-and its get_value() function will return the value that it has.
+and its getValue() function will return the value that it has.
 
 There are 5 types of simple parameters that come packaged with the plugin:
 
