@@ -26,7 +26,7 @@ import java.util.function.Supplier;
  */
 public class TestSupplier<T> implements Supplier<T> {
     /** The value this supplier contains.  You may change it to whatever you
-     * wish, but you must call {@link DParameter#read_from_dialog} before the
+     * wish, but you must call {@link DParameter#readFromDialog} before the
      * parameter's value will actually change.
      */
     public T value;

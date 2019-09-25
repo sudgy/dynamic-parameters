@@ -53,7 +53,7 @@ public class DynamicPreprocessor extends AbstractPreprocessorPlugin {
             if (input instanceof DParameter) {
                 DParameter param = (DParameter)input;
                 if (param.invalid()) {
-                    cancel(param.get_error());
+                    cancel(param.getError());
                     return;
                 }
                 P_context.inject(param);

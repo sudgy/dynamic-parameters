@@ -52,7 +52,7 @@ public class Harvester extends WindowAdapter {
         M_name = name;
         M_params = params;
         for (DParameter param : M_params) {
-            param.set_harvester(this);
+            param.setHarvester(this);
         }
     }
     /** Populate the parameters with preferences
@@ -63,13 +63,13 @@ public class Harvester extends WindowAdapter {
     public void populate(Class<?> c)
     {
         for (DParameter<?> param : M_params) {
-            param.read_from_prefs(c, param.label());
-            param.refresh_visibility();
+            param.readFromPrefs(c, param.label());
+            param.refreshVisibility();
         }
         populate();
         if (!M_canceled) {
             for (DParameter<?> param : M_params) {
-                param.save_to_prefs(c, param.label());
+                param.saveToPrefs(c, param.label());
             }
         }
     }
@@ -77,13 +77,13 @@ public class Harvester extends WindowAdapter {
     // This populates the parameters without reading from any prefs
     public void populate()
     {
-        create_dialog();
+        createDialog();
         HarvesterDialog dialog = M_dialog;
         M_dialog.show();
         // Because the dialog is modal, the dialog has now been closed.  This
         // could be because the user finished, or because the dialog had to be
         // recreated.  This if checks if the dialog had to be recreated.
-        if (!dialog.was_finished()) {
+        if (!dialog.wasFinished()) {
             // This function shouldn't return until the user is finished.  So we
             // wait for M_finished to be true before finishing.
             synchronized(this) {
@@ -91,20 +91,20 @@ public class Harvester extends WindowAdapter {
                 catch (InterruptedException e) {M_canceled = true;}
             }
         }
-        if (M_dialog.was_canceled()) M_canceled = true;
+        if (M_dialog.wasCanceled()) M_canceled = true;
     }
-    private void create_dialog()
+    private void createDialog()
     {
         M_dialog = new HarvesterDialog(M_name);
         for (DParameter param : M_params) {
             if (param.visible()) {
-                param.add_to_dialog(M_dialog);
+                param.addToDialog(M_dialog);
             }
         }
         // This message is the error/warning
         // Note that it does NOT get filled in right away
-        M_error_label = M_dialog.add_message("", Color.RED);
-        M_dialog.set_harvester(this);
+        M_errorLabel = M_dialog.addMessage("", Color.RED);
+        M_dialog.setHarvester(this);
     }
     /** Calculate anything needed when the window is opened. */
     @Override
@@ -114,8 +114,8 @@ public class Harvester extends WindowAdapter {
         // correctly when errors are present.  If an error is instantly present
         // it needs to be shown instantly, though.  This function gets the width
         // between the creation of the window and setting of the error.
-        M_dialog_width = M_dialog.width();
-        check_for_errors();
+        M_dialogWidth = M_dialog.width();
+        checkForErrors();
     }
     /** React to user input.  This recreates the dialog if it is needed.
      *
@@ -131,27 +131,27 @@ public class Harvester extends WindowAdapter {
         // If dialog != M_dialog, that means that this dialog is an old dialog
         // closing.  We don't want to have anything to do with it in that case.
         if (dialog == M_dialog) {
-            boolean reconstruction_needed = false;
+            boolean reconstructionNeeded = false;
             for (DParameter param : M_params) {
-                param.read_from_dialog();
-                if (param.visibility_changed()) {
-                    reconstruction_needed = true;
-                    param.refresh_visibility();
+                param.readFromDialog();
+                if (param.visibilityChanged()) {
+                    reconstructionNeeded = true;
+                    param.refreshVisibility();
                 }
-                if (param.reconstruction_needed()) {
-                    reconstruction_needed = true;
+                if (param.reconstructionNeeded()) {
+                    reconstructionNeeded = true;
                 }
             }
-            if (reconstruction_needed) {
-                M_dialog.remove_harvester(this);
+            if (reconstructionNeeded) {
+                M_dialog.removeHarvester(this);
                 M_dialog.dispose();
-                create_dialog();
+                createDialog();
                 dialog = M_dialog;
                 M_dialog.show();
                 // Because GenericDialog is modal, the dialog has now been
                 // closed.  If it was canceled or oked, our job is done and we
                 // need to notify populate().
-                if (dialog.was_finished()) {
+                if (dialog.wasFinished()) {
                     synchronized(this) {
                         M_finished = true;
                         notifyAll();
@@ -161,8 +161,8 @@ public class Harvester extends WindowAdapter {
                 // This return value doesn't really matter, but it doesn't hurt.
                 return false;
             }
-            // if (!reconstruction_needed)
-            else return check_for_errors();
+            // if (!reconstructionNeeded)
+            else return checkForErrors();
         }
         // if (dialog != M_dialog)
         else return false;
@@ -176,58 +176,58 @@ public class Harvester extends WindowAdapter {
      * @return <code>true</code> if there are no errors.  This value is used for
      *         {@link dialogItemChanged}.
      */
-    public boolean check_for_errors()
+    public boolean checkForErrors()
     {
         String error = null;
         // Check error
         for (DParameter param : M_params) {
-            error = param.get_error();
+            error = param.getError();
             if (error != null) {
-                M_dialog.set_enabled(false);
-                M_error_label.setText(error);
-                M_error_width = M_dialog.string_width(error) + 64;
+                M_dialog.setEnabled(false);
+                M_errorLabel.setText(error);
+                M_errorWidth = M_dialog.stringWidth(error) + 64;
                 resize();
                 return false;
             }
         }
         // There is no error, we can push OK (this must be here because warnings
         // need to return before the end of the function)
-        M_dialog.set_enabled(true);
+        M_dialog.setEnabled(true);
         // Check warning
         for (DParameter param : M_params) {
-            error = param.get_warning();
+            error = param.getWarning();
             if (error != null) {
-                M_error_label.setText(error);
-                M_error_width = M_dialog.string_width(error) + 64;
+                M_errorLabel.setText(error);
+                M_errorWidth = M_dialog.stringWidth(error) + 64;
                 resize();
                 return true;
             }
         }
         // There are no errors or warnings
-        M_error_label.setText(null);
-        M_error_width = 0;
+        M_errorLabel.setText(null);
+        M_errorWidth = 0;
         resize();
         return true;
     }
     private void resize()
     {
-        int width = M_dialog_width > M_error_width ? M_dialog_width : M_error_width;
+        int width = M_dialogWidth > M_errorWidth ? M_dialogWidth : M_errorWidth;
         for (DParameter param : M_params) {
-            int param_width = param.width();
-            width = width > param_width ? width : param_width;
+            int paramWidth = param.width();
+            width = width > paramWidth ? width : paramWidth;
         }
-        M_dialog.set_width(width);
+        M_dialog.setWidth(width);
     }
     private String M_name;
     private DParameter<?>[] M_params;
 
     private HarvesterDialog M_dialog;
-    private Label M_error_label;
-    private int M_dialog_width;
-    private int M_error_width;
+    private Label M_errorLabel;
+    private int M_dialogWidth;
+    private int M_errorWidth;
 
-    private Lock M_finished_lock = new ReentrantLock();
-    private Condition M_finished_condition = M_finished_lock.newCondition();
+    private Lock M_finishedLock = new ReentrantLock();
+    private Condition M_finishedCondition = M_finishedLock.newCondition();
     private boolean M_finished = false;
     private boolean M_canceled = false;
 }

@@ -27,21 +27,21 @@ import org.scijava.Context;
 import org.scijava.prefs.PrefService;
 
 public class ChoiceParameterTest {
-    @Test public void test_base()
+    @Test public void testBase()
     {
         ChoiceParameter param = new ChoiceParameter("", new String[] {"a", "b", "c"}, "b");
-        assertEquals(param.get_value(), "b", "ChoiceParameter should start with its default value.");
+        assertEquals(param.getValue(), "b", "ChoiceParameter should start with its default value.");
     }
-    @Test public void test_dialog()
+    @Test public void testDialog()
     {
         TestDialog dialog = new TestDialog();
         ChoiceParameter param = new ChoiceParameter("", new String[] {"a", "b", "c"}, "b");
-        param.add_to_dialog(dialog);
-        dialog.get_string(0).value = "a";
-        param.read_from_dialog();
-        assertEquals(param.get_value(), "a", "ChoiceParameter should read from dialogs correctly.");
+        param.addToDialog(dialog);
+        dialog.getString(0).value = "a";
+        param.readFromDialog();
+        assertEquals(param.getValue(), "a", "ChoiceParameter should read from dialogs correctly.");
     }
-    @Test public void test_prefs()
+    @Test public void testPrefs()
     {
         Context context = new Context(PrefService.class);
         ChoiceParameter param1 = new ChoiceParameter("", new String[] {"a", "b", "c"}, "a");
@@ -50,11 +50,11 @@ public class ChoiceParameterTest {
         context.inject(param1);
         context.inject(param2);
         context.inject(param3);
-        param1.save_to_prefs(getClass(), "1");
-        param3.save_to_prefs(getClass(), "2");
-        param2.read_from_prefs(getClass(), "1");
-        assertEquals(param2.get_value(), "a", "ChoiceParameter should read from prefs correctly.");
-        param2.read_from_prefs(getClass(), "2");
-        assertEquals(param2.get_value(), "b", "If the value is not valid when reading from prefs, ChoiceParameter should fall back to the default value.");
+        param1.saveToPrefs(getClass(), "1");
+        param3.saveToPrefs(getClass(), "2");
+        param2.readFromPrefs(getClass(), "1");
+        assertEquals(param2.getValue(), "a", "ChoiceParameter should read from prefs correctly.");
+        param2.readFromPrefs(getClass(), "2");
+        assertEquals(param2.getValue(), "b", "If the value is not valid when reading from prefs, ChoiceParameter should fall back to the default value.");
     }
 }

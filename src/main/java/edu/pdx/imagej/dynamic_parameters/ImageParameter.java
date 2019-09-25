@@ -48,16 +48,16 @@ public class ImageParameter extends AbstractDParameter<ImagePlus> {
     {
         super(label);
         M_label = label;
-        int[] id_list = WindowManager.getIDList();
-        if (id_list == null) {
+        int[] idList = WindowManager.getIDList();
+        if (idList == null) {
             M_invalid = true;
-            set_error("At least one image must be open.");
+            setError("At least one image must be open.");
             return;
         }
-        M_options = new String[id_list.length];
-        M_images = new ImagePlus[id_list.length];
-        for (int i = 0; i < id_list.length; ++i) {
-            M_images[i]  = WindowManager.getImage(id_list[i]);
+        M_options = new String[idList.length];
+        M_images = new ImagePlus[idList.length];
+        for (int i = 0; i < idList.length; ++i) {
+            M_images[i]  = WindowManager.getImage(idList[i]);
             M_options[i] = String.valueOf(i+1) + ": " + M_images[i].getTitle();
         }
     }
@@ -77,8 +77,8 @@ public class ImageParameter extends AbstractDParameter<ImagePlus> {
         M_label = label;
         if (images.isEmpty()) {
             M_invalid = true;
-            set_error("At least one image must be passed to the parameter "
-                + DParameter.display_label(label) + ".");
+            setError("At least one image must be passed to the parameter "
+                + DParameter.displayLabel(label) + ".");
         }
         M_options = new String[images.size()];
         M_images  = new ImagePlus[M_options.length];
@@ -106,29 +106,29 @@ public class ImageParameter extends AbstractDParameter<ImagePlus> {
      * @return The ImagePlus from this parameter
      */
     @Override
-    public ImagePlus get_value()
+    public ImagePlus getValue()
     {
         if (M_images == null) return null;
-        else return M_images[M_current_index];
+        else return M_images[M_currentIndex];
     }
 
     /** Adds this parameter to the dialog.
      */
     @Override
-    public void add_to_dialog(DPDialog dialog)
+    public void addToDialog(DPDialog dialog)
     {
         if (M_images == null) return;
-        M_supplier = dialog.add_choice_index(M_label,
-                                             M_options[M_current_index],
+        M_supplier = dialog.addChoiceIndex(M_label,
+                                             M_options[M_currentIndex],
                                              M_options);
     }
     /** Reads this parameter from the dialog.
      */
     @Override
-    public void read_from_dialog()
+    public void readFromDialog()
     {
         if (M_images == null) return;
-        M_current_index = M_supplier.get();
+        M_currentIndex = M_supplier.get();
     }
     /** Saves the name of this image to prefs.
      * <p>
@@ -137,10 +137,10 @@ public class ImageParameter extends AbstractDParameter<ImagePlus> {
      * @param c unused
      * @param name unused
      */
-    @Override public void save_to_prefs(Class<?> c, String name)
+    @Override public void saveToPrefs(Class<?> c, String name)
     {
         if (M_images == null) return;
-        prefs().put(c, name, M_options[M_current_index]);
+        prefs().put(c, name, M_options[M_currentIndex]);
     }
     /** Reads the last saved image from prefs and tries to select it again.
      * <p>
@@ -149,13 +149,13 @@ public class ImageParameter extends AbstractDParameter<ImagePlus> {
      * @param c unused
      * @param name unused
      */
-    @Override public void read_from_prefs(Class<?> c, String name)
+    @Override public void readFromPrefs(Class<?> c, String name)
     {
         if (M_images == null) return;
         String image = prefs().get(c, name);
         for (int i = 0; i < M_options.length; ++i) {
             if (M_options[i].equals(image)) {
-                M_current_index = i;
+                M_currentIndex = i;
             }
         }
     }
@@ -168,7 +168,7 @@ public class ImageParameter extends AbstractDParameter<ImagePlus> {
     private String            M_label;
     private ImagePlus[]       M_images;
     private String[]          M_options;
-    private int               M_current_index = 0;
+    private int               M_currentIndex = 0;
     private boolean           M_invalid = false;
     private Supplier<Integer> M_supplier;
 }

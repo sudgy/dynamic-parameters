@@ -24,19 +24,19 @@ package edu.pdx.imagej.dynamic_parameters;
  */
 public class TestDialogNumber<T extends Number & Comparable<T>> implements DPDialog.DialogNumber<T> {
     /** The value this dialog number contains.  You may change it to whatever
-     * you wish, but you must call {@link DParameter#read_from_dialog} before
+     * you wish, but you must call {@link DParameter#readFromDialog} before
      * the parameter's value will actually change.
      */
     public T value;
     /** {@inheritDoc} */ @Override
     public T get() {return value;}
     /** {@inheritDoc} */ @Override
-    public boolean in_bounds(T value)
+    public boolean inBounds(T value)
     {
         return (value.compareTo(M_min) >= 0 && value.compareTo(M_max) <= 0);
     }
     /** {@inheritDoc} */
-    @Override public void set_bounds(T min, T max) {M_min = min; M_max = max;}
+    @Override public void setBounds(T min, T max) {M_min = min; M_max = max;}
 
     private T M_min;
     private T M_max;

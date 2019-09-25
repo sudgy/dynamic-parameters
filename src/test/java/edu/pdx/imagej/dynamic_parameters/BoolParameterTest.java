@@ -27,33 +27,33 @@ import org.scijava.Context;
 import org.scijava.prefs.PrefService;
 
 public class BoolParameterTest {
-    @Test public void test_base()
+    @Test public void testBase()
     {
         BoolParameter param = new BoolParameter("", true);
-        assertEquals(param.get_value(), true, "BoolParameter should start with its default value, true.");
+        assertEquals(param.getValue(), true, "BoolParameter should start with its default value, true.");
         param = new BoolParameter("", false);
-        assertEquals(param.get_value(), false, "BoolParameter should start with its default value, false.");
+        assertEquals(param.getValue(), false, "BoolParameter should start with its default value, false.");
     }
-    @Test public void test_dialog()
+    @Test public void testDialog()
     {
         TestDialog dialog = new TestDialog();
         BoolParameter param = new BoolParameter("", true);
-        param.add_to_dialog(dialog);
-        dialog.get_boolean(0).value = false;
-        param.read_from_dialog();
-        assertEquals(param.get_value(), false, "BoolParameter should read from dialogs correctly.");
+        param.addToDialog(dialog);
+        dialog.getBoolean(0).value = false;
+        param.readFromDialog();
+        assertEquals(param.getValue(), false, "BoolParameter should read from dialogs correctly.");
     }
-    @Test public void test_prefs()
+    @Test public void testPrefs()
     {
         Context context = new Context(PrefService.class);
         BoolParameter param1 = new BoolParameter("", true);
         BoolParameter param2 = new BoolParameter("", false);
         context.inject(param1);
         context.inject(param2);
-        param1.save_to_prefs(getClass(), "a");
-        param2.read_from_prefs(getClass(), "b");
-        assertEquals(param2.get_value(), false, "BoolParameter.read_from_prefs should not read prefs with a different label.");
-        param2.read_from_prefs(getClass(), "a");
-        assertEquals(param2.get_value(), true, "BoolParameter.read_from_prefs should work.");
+        param1.saveToPrefs(getClass(), "a");
+        param2.readFromPrefs(getClass(), "b");
+        assertEquals(param2.getValue(), false, "BoolParameter.readFromPrefs should not read prefs with a different label.");
+        param2.readFromPrefs(getClass(), "a");
+        assertEquals(param2.getValue(), true, "BoolParameter.readFromPrefs should work.");
     }
 }

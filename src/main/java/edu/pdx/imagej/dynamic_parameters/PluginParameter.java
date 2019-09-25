@@ -67,12 +67,12 @@ public class PluginParameter<T extends ParameterPlugin>
     @Override
     public void initialize()
     {
-        for (PluginInfo<T> info : P_plugin_service.getPluginsOfType(M_class)) {
+        for (PluginInfo<T> info : P_pluginService.getPluginsOfType(M_class)) {
             if (P_prefs.getBoolean(PluginParameter.class, info.getClassName(),
                                    true)) {
                 String name = info.getName();
                 if (name == null || name.isEmpty()) name = info.getClassName();
-                M_plugins.put(name, P_plugin_service.createInstance(info));
+                M_plugins.put(name, P_pluginService.createInstance(info));
             }
         }
         if (M_plugins.size() > 1) {
@@ -81,60 +81,60 @@ public class PluginParameter<T extends ParameterPlugin>
             for (String name : M_plugins.keySet()) {
                 choices[i++] = name;
             }
-            M_choice = add_parameter(ChoiceParameter.class, label(),
+            M_choice = addParameter(ChoiceParameter.class, label(),
                                      choices, choices[0]);
         }
         for (Entry<String, T> entry : M_plugins.entrySet()) {
             if (entry.getValue().param() != null) {
                 M_parameters.put(entry.getKey(), entry.getValue().param());
-                add_premade_parameter(entry.getValue().param());
+                addPremadeParameter(entry.getValue().param());
             }
         }
-        set_visibilities();
+        setVisibilities();
     }
     /** {@inheritDoc} */
     @Override
-    public void read_from_dialog()
+    public void readFromDialog()
     {
-        super.read_from_dialog();
-        set_visibilities();
+        super.readFromDialog();
+        setVisibilities();
     }
     /** {@inheritDoc} */
     @Override
-    public void read_from_prefs(Class<?> c, String name)
+    public void readFromPrefs(Class<?> c, String name)
     {
-        super.read_from_prefs(c, name);
-        set_visibilities();
+        super.readFromPrefs(c, name);
+        setVisibilities();
     }
     /** Get the plugin that is currently selected. */
     @Override
-    public T get_value()
+    public T getValue()
     {
         // If only one choice
         if (M_choice == null) return M_plugins.values().iterator().next();
-        else return M_plugins.get(M_choice.get_value());
+        else return M_plugins.get(M_choice.getValue());
     }
 
     /** Get all of the plugins that are being selected from.
      *
      * @return An Iterable that iterates through all of the plugins.
      */
-    public Iterable<T> get_all_plugins()
+    public Iterable<T> getAllPlugins()
     {
         return M_plugins.values();
     }
 
     /** Enable or disable a plugin.  If a plugin is disabled, it cannot be
      * chosen.  If you wish to enable/disable a plugin without an instance of
-     * <code>PluginParameter</code>, you can use {@link set_enabled(PrefService,
-     * Class, boolean) set_enabled(PrefService, Class&lt;?&gt;, boolean)}.
+     * <code>PluginParameter</code>, you can use {@link setEnabled(PrefService,
+     * Class, boolean) setEnabled(PrefService, Class&lt;?&gt;, boolean)}.
      *
      * @param plugin The class for the plugin type to enable/disable.
      * @param enabled The new value for the enabled status of the plugin.
      */
-    public void set_enabled(Class<? extends T> plugin, boolean enabled)
+    public void setEnabled(Class<? extends T> plugin, boolean enabled)
     {
-        set_enabled(P_prefs, plugin, enabled);
+        setEnabled(P_prefs, plugin, enabled);
     }
     /** Enable or disable a plugin.  If a plugin is disabled, it cannot be
      * chosen.
@@ -144,20 +144,20 @@ public class PluginParameter<T extends ParameterPlugin>
      * @param plugin The class for the plugin type to enable/disable.
      * @param enabled The new value for the enabled status of the plugin.
      */
-    public static void set_enabled(PrefService prefs, Class<?> plugin,
+    public static void setEnabled(PrefService prefs, Class<?> plugin,
                                    boolean enabled)
     {
         prefs.put(PluginParameter.class, plugin.getName(), enabled);
     }
 
-    private void set_visibilities()
+    private void setVisibilities()
     {
         if (M_choice == null) return; // If only one choice
         for (DParameter param : M_parameters.values()) {
-            param.set_new_visibility(false);
+            param.setNewVisibility(false);
         }
-        DParameter current = M_parameters.get(M_choice.get_value());
-        if (current != null) current.set_new_visibility(true);
+        DParameter current = M_parameters.get(M_choice.getValue());
+        if (current != null) current.setNewVisibility(true);
     }
 
     private Class<T>                    M_class;
@@ -165,6 +165,6 @@ public class PluginParameter<T extends ParameterPlugin>
     private HashMap<String, T>          M_plugins    = new LinkedHashMap<>();
     private HashMap<String, DParameter> M_parameters = new HashMap<>();
 
-    @Parameter private PluginService P_plugin_service;
+    @Parameter private PluginService P_pluginService;
     @Parameter private PrefService P_prefs;
 }

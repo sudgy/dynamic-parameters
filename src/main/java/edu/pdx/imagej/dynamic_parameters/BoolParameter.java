@@ -30,42 +30,42 @@ public class BoolParameter extends AbstractDParameter<Boolean> {
     /** Construct the BoolParameter with its label and default value.
      *
      * @param label The label for this parameter to be used on the dialog.
-     * @param default_value The default value for this parameter.
+     * @param defaultValue The default value for this parameter.
      */
-    public BoolParameter(String label, Boolean default_value)
+    public BoolParameter(String label, Boolean defaultValue)
     {
         super(label);
         M_label = label;
-        M_value = default_value;
+        M_value = defaultValue;
     }
     /** Gets the boolean from this parameter.
      *
      * @return The boolean from this parameter
      */
     @Override
-    public Boolean get_value() {return M_value;}
+    public Boolean getValue() {return M_value;}
 
     /** Adds this parameter to the dialog.
      */
     @Override
-    public void add_to_dialog(DPDialog dialog)
+    public void addToDialog(DPDialog dialog)
     {
-        M_supplier = dialog.add_boolean(M_label, M_value);
+        M_supplier = dialog.addBoolean(M_label, M_value);
     }
     /** Reads this parameter from the dialog.
      */
     @Override
-    public void read_from_dialog()
+    public void readFromDialog()
     {
         M_value = M_supplier.get();
     }
     /** Save this parameter to {@link prefs}
      */
-    public void save_to_prefs(Class<?> c, String name)
+    public void saveToPrefs(Class<?> c, String name)
         {prefs().put(c, name, M_value);}
     /** Read this parameter from {@link prefs}
      */
-    public void read_from_prefs(Class<?> c, String name)
+    public void readFromPrefs(Class<?> c, String name)
         {M_value = prefs().getBoolean(c, name, M_value);}
 
     private String M_label;

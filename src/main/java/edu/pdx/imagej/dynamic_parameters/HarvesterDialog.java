@@ -52,11 +52,11 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener, Focus
     {
         M_gd.dispose();
     }
-    boolean was_canceled()
+    boolean wasCanceled()
     {
         return M_gd.wasCanceled();
     }
-    boolean was_finished()
+    boolean wasFinished()
     {
         return M_gd.wasCanceled() || M_gd.wasOKed();
     }
@@ -64,25 +64,25 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener, Focus
     {
         return M_gd.getSize().width;
     }
-    void set_width(int width)
+    void setWidth(int width)
     {
         M_gd.setSize(width, M_gd.getSize().height);
     }
-    void set_enabled(boolean enable)
+    void setEnabled(boolean enable)
     {
         M_gd.getButtons()[0].setEnabled(enable);
     }
     @Override
-    public int string_width(String string)
+    public int stringWidth(String string)
     {
         return M_gd.getGraphics().getFontMetrics().stringWidth(string);
     }
-    void set_harvester(Harvester harvester)
+    void setHarvester(Harvester harvester)
     {
         M_harvester = harvester;
         M_gd.addWindowListener(harvester);
     }
-    void remove_harvester(Harvester harvester)
+    void removeHarvester(Harvester harvester)
     {
         M_gd.removeWindowListener(harvester);
     }
@@ -94,7 +94,7 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener, Focus
     @Override
     public void stateChanged(ChangeEvent e)
     {
-        set_enabled(M_harvester.dialogItemChanged(this, e));
+        setEnabled(M_harvester.dialogItemChanged(this, e));
     }
     @Override
     public void focusGained(FocusEvent e) {
@@ -105,85 +105,85 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener, Focus
     @Override public void focusLost(FocusEvent e) {}
     /** {@inheritDoc} */
     @Override
-    public Supplier<Boolean> add_boolean(String label, boolean default_value)
+    public Supplier<Boolean> addBoolean(String label, boolean defaultValue)
     {
         ++gridy;
-        M_gd.addCheckbox(label, default_value);
-        Checkbox last_checkbox = (Checkbox)M_gd.getCheckboxes().lastElement();
-        return () -> last_checkbox.getState();
+        M_gd.addCheckbox(label, defaultValue);
+        Checkbox lastCheckbox = (Checkbox)M_gd.getCheckboxes().lastElement();
+        return () -> lastCheckbox.getState();
     }
     /** {@inheritDoc} */
     @Override
-    public Supplier<String> add_choice(String label, String default_value, String[] choices)
+    public Supplier<String> addChoice(String label, String defaultValue, String[] choices)
     {
         ++gridy;
-        M_gd.addChoice(label, choices, default_value);
-        Choice last_choice = (Choice)M_gd.getChoices().lastElement();
-        return () -> last_choice.getSelectedItem();
+        M_gd.addChoice(label, choices, defaultValue);
+        Choice lastChoice = (Choice)M_gd.getChoices().lastElement();
+        return () -> lastChoice.getSelectedItem();
     }
     /** {@inheritDoc} */
     @Override
-    public Supplier<Integer> add_choice_index(String label, String default_value, String[] choices)
+    public Supplier<Integer> addChoiceIndex(String label, String defaultValue, String[] choices)
     {
         ++gridy;
-        M_gd.addChoice(label, choices, default_value);
-        Choice last_choice = (Choice)M_gd.getChoices().lastElement();
-        return () -> last_choice.getSelectedIndex();
+        M_gd.addChoice(label, choices, defaultValue);
+        Choice lastChoice = (Choice)M_gd.getChoices().lastElement();
+        return () -> lastChoice.getSelectedIndex();
     }
     /** {@inheritDoc} */
     @Override
-    public DialogNumber<Double> add_double(String label, double default_value, String units, int decimals)
+    public DialogNumber<Double> addDouble(String label, double defaultValue, String units, int decimals)
     {
-        double step_size = Math.pow(10, -decimals);
-        SpinnerNumberModel model = new SpinnerNumberModel(default_value,
+        double stepSize = Math.pow(10, -decimals);
+        SpinnerNumberModel model = new SpinnerNumberModel(defaultValue,
                                                           -Double.MAX_VALUE,
                                                           Double.MAX_VALUE,
-                                                          step_size);
+                                                          stepSize);
         JSpinner spinner = new JSpinner(model);
-        add_fake_number(label, spinner, units);
-        return new DialogDouble(spinner, model, step_size);
+        addFakeNumber(label, spinner, units);
+        return new DialogDouble(spinner, model, stepSize);
     }
     /** {@inheritDoc} */
     @Override
-    public DialogNumber<Integer> add_integer(String label, int default_value, String units)
+    public DialogNumber<Integer> addInteger(String label, int defaultValue, String units)
     {
-        SpinnerNumberModel model = new SpinnerNumberModel(default_value,
+        SpinnerNumberModel model = new SpinnerNumberModel(defaultValue,
                                                           Integer.MIN_VALUE,
                                                           Integer.MAX_VALUE,
                                                           1);
         JSpinner spinner = new JSpinner(model);
-        add_fake_number(label, spinner, units);
+        addFakeNumber(label, spinner, units);
         return new DialogInt(spinner, model, 1);
     }
     /** {@inheritDoc} */
     @Override
-    public void add_panel(Panel panel)
+    public void addPanel(Panel panel)
     {
         ++gridy;
         M_gd.addPanel(panel);
     }
     /** {@inheritDoc} */
     @Override
-    public Supplier<String> add_radio_buttons(String label, String default_value, String[] choices, int rows, int columns)
+    public Supplier<String> addRadioButtons(String label, String defaultValue, String[] choices, int rows, int columns)
     {
         gridy += 2;
-        M_gd.addRadioButtonGroup(label, choices, rows, columns, default_value);
+        M_gd.addRadioButtonGroup(label, choices, rows, columns, defaultValue);
         CheckboxGroup radio = (CheckboxGroup)M_gd.getRadioButtonGroups().lastElement();
         return () -> radio.getSelectedCheckbox().getLabel();
     }
     /** {@inheritDoc} */
     @Override
-    public Supplier<String> add_text_box(String label, String default_value)
+    public Supplier<String> addTextBox(String label, String defaultValue)
     {
         ++gridy;
-        M_gd.addStringField(label, default_value);
+        M_gd.addStringField(label, defaultValue);
         TextField text = (TextField)M_gd.getStringFields().lastElement();
         text.addFocusListener(this);
         return () -> text.getText();
     }
     /** {@inheritDoc} */
     @Override
-    public Label add_message(String message)
+    public Label addMessage(String message)
     {
         ++gridy;
         M_gd.addMessage(message);
@@ -191,7 +191,7 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener, Focus
     }
     /** {@inheritDoc} */
     @Override
-    public Label add_message(String message, Color color)
+    public Label addMessage(String message, Color color)
     {
         ++gridy;
         M_gd.addMessage(message, Font.decode(null), color);
@@ -199,11 +199,11 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener, Focus
     }
 
     // This function is basically copy + pasted from ImageJ's GenericDialog code
-    private void add_fake_number(String label, JSpinner spinner, String units)
+    private void addFakeNumber(String label, JSpinner spinner, String units)
     {
         spinner.setPreferredSize(new Dimension(200, spinner.getPreferredSize().height));
         JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor)spinner.getEditor();
-        JTextField text_field = editor.getTextField();
+        JTextField textField = editor.getTextField();
         spinner.addChangeListener(this);
         ++gridy;
         GridBagConstraints c = new GridBagConstraints();
@@ -211,7 +211,7 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener, Focus
         c.anchor = GridBagConstraints.EAST;
         c.gridwidth = 1;
         c.gridy = gridy - 1;
-        M_gd.add(new Label(DParameter.display_label(label)), c);
+        M_gd.add(new Label(DParameter.displayLabel(label)), c);
         c.gridx = GridBagConstraints.RELATIVE;
         c.anchor = GridBagConstraints.WEST;
         Panel panel = new Panel();
@@ -227,27 +227,27 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener, Focus
     private int gridy;
 
     private abstract class DialogNum<T extends Number & Comparable<T>> implements DialogNumber<T>, DocumentListener, FocusListener {
-        public DialogNum(JSpinner spinner, SpinnerNumberModel model, T step_size)
+        public DialogNum(JSpinner spinner, SpinnerNumberModel model, T stepSize)
         {
             M_spinner = spinner;
             M_model = model;
             M_editor = (JSpinner.NumberEditor)M_spinner.getEditor();
-            M_step_size = step_size;
+            M_stepSize = stepSize;
             listen();
         }
         @Override
         public T get()
         {
-            String text = get_text_field().getText();
+            String text = getTextField().getText();
             return parse(text);
         }
         @Override
-        public void set_bounds(T min, T max)
+        public void setBounds(T min, T max)
         {
             T value = get();
             if (value == null) return;
-            M_model = new SpinnerNumberModel(min, min, max, M_step_size);
-            if (in_bounds(value)) M_model.setValue(value);
+            M_model = new SpinnerNumberModel(min, min, max, M_stepSize);
+            if (inBounds(value)) M_model.setValue(value);
             M_spinner.setModel(M_model);
             M_editor = (JSpinner.NumberEditor)M_spinner.getEditor();
             listen();
@@ -256,15 +256,15 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener, Focus
         public void focusGained(FocusEvent e)
         {
             SwingUtilities.invokeLater(new Runnable() {
-                @Override public void run() {get_text_field().selectAll();}
+                @Override public void run() {getTextField().selectAll();}
             });
         }
         @Override public void focusLost(FocusEvent e) {}
-        @Override public void insertUpdate(DocumentEvent ev) {document_changed(ev);}
-        @Override public void removeUpdate(DocumentEvent ev) {document_changed(ev);}
-        @Override public void changedUpdate(DocumentEvent ev) {document_changed(ev);}
+        @Override public void insertUpdate(DocumentEvent ev) {documentChanged(ev);}
+        @Override public void removeUpdate(DocumentEvent ev) {documentChanged(ev);}
+        @Override public void changedUpdate(DocumentEvent ev) {documentChanged(ev);}
 
-        private void document_changed(DocumentEvent ev)
+        private void documentChanged(DocumentEvent ev)
         {
             // Because DocumentListeners may get multiple events at one time, we
             // need a way to only check once no matter how many events we get at
@@ -274,7 +274,7 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener, Focus
                 @Override public void run()
                 {
                     if (!M_changed) {
-                        set_enabled(M_harvester.dialogItemChanged(HarvesterDialog.this, ev));
+                        setEnabled(M_harvester.dialogItemChanged(HarvesterDialog.this, ev));
                         M_changed = true;
                     }
                 }
@@ -282,10 +282,10 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener, Focus
         }
         private void listen()
         {
-            get_text_field().getDocument().addDocumentListener(this);
-            get_text_field().addFocusListener(this);
+            getTextField().getDocument().addDocumentListener(this);
+            getTextField().addFocusListener(this);
         }
-        private JTextField get_text_field()
+        private JTextField getTextField()
         {
             JSpinner.DefaultEditor editor = (JSpinner.DefaultEditor)M_spinner.getEditor();
             return editor.getTextField();
@@ -295,14 +295,14 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener, Focus
         private JSpinner M_spinner;
         protected SpinnerNumberModel M_model;
         protected JSpinner.NumberEditor M_editor;
-        private T M_step_size;
+        private T M_stepSize;
         private boolean M_changed = false;
     }
     private class DialogDouble extends DialogNum<Double> {
-        public DialogDouble(JSpinner spinner, SpinnerNumberModel model, Double step_size)
-        {super(spinner, model, step_size);}
+        public DialogDouble(JSpinner spinner, SpinnerNumberModel model, Double stepSize)
+        {super(spinner, model, stepSize);}
         @Override
-        public boolean in_bounds(Double value)
+        public boolean inBounds(Double value)
         {
             return (value.compareTo((Double)M_model.getMinimum()) >= 0 &&
                     value.compareTo((Double)M_model.getMaximum()) <= 0);
@@ -319,10 +319,10 @@ class HarvesterDialog implements DPDialog, DialogListener, ChangeListener, Focus
         }
     }
     private class DialogInt extends DialogNum<Integer> {
-        public DialogInt(JSpinner spinner, SpinnerNumberModel model, Integer step_size)
-        {super(spinner, model, step_size);}
+        public DialogInt(JSpinner spinner, SpinnerNumberModel model, Integer stepSize)
+        {super(spinner, model, stepSize);}
         @Override
-        public boolean in_bounds(Integer value)
+        public boolean inBounds(Integer value)
         {
             return (value.compareTo((Integer)M_model.getMinimum()) >= 0 &&
                     value.compareTo((Integer)M_model.getMaximum()) <= 0);

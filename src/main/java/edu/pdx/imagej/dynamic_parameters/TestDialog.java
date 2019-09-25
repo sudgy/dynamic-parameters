@@ -26,7 +26,7 @@ import java.awt.Color;
 import java.awt.Label;
 
 /** TestDialog is an implementation of {@link DPDialog} designed for testing.
- * For every type of supported input, you can use one of the <code>get_*</code>
+ * For every type of supported input, you can use one of the <code>get*</code>
  * functions to get a {@link TestSupplier} that you can use to edit the values.
  * Here is an example of using this class on an {@link IntParameter}:
  *
@@ -34,32 +34,32 @@ import java.awt.Label;
  * {@code
  * TestDialog dialog = new TestDialog();
  * IntParameter param = new IntParameter(1, "");
- * param.add_to_dialog(dialog);
- * dialog.get_integer(0).value = 2; // The index might be different, see below
- * param.read_from_dialog(); // Make sure to read from the dialog!
- * // At this point param.get_value() == 2
+ * param.addToDialog(dialog);
+ * dialog.getInteger(0).value = 2; // The index might be different, see below
+ * param.readFromDialog(); // Make sure to read from the dialog!
+ * // At this point param.getValue() == 2
  * }
  * </pre>
  * <p>
- * All of the <code>get_*</code> functions take in an index parameter.  This
+ * All of the <code>get*</code> functions take in an index parameter.  This
  * index relates to the order that parameters were added.  If you have only
  * added one parameter, the index should be zero.  If you called
- * {@link add_integer add_integer} three times, to get the last one the index
+ * {@link addInteger addInteger} three times, to get the last one the index
  * should be two.  Each type of index is tracked separately.  However, choices,
  * radio boxes, and text boxes are considered identical and they share indices.
  */
 public class TestDialog implements DPDialog {
     /** {@inheritDoc} */ @Override
-    public Supplier<Boolean> add_boolean(String label, boolean default_value)
-        {return add(default_value, M_booleans);}
+    public Supplier<Boolean> addBoolean(String label, boolean defaultValue)
+        {return add(defaultValue, M_booleans);}
     /** {@inheritDoc} */ @Override
-    public Supplier<String> add_choice(String label,
-                                       String default_value,
+    public Supplier<String> addChoice(String label,
+                                       String defaultValue,
                                        String[] choices)
-        {return add(default_value, M_strings);}
+        {return add(defaultValue, M_strings);}
     /** {@inheritDoc} */ @Override
-    public Supplier<Integer> add_choice_index(String label,
-                                              String default_value,
+    public Supplier<Integer> addChoiceIndex(String label,
+                                              String defaultValue,
                                               String[] choices)
     {
         int index = -1;
@@ -69,32 +69,32 @@ public class TestDialog implements DPDialog {
                 break;
             }
         }
-        return add(index, M_string_choices);
+        return add(index, M_stringChoices);
     }
     /** {@inheritDoc} */ @Override
-    public DialogNumber<Double> add_double(String label, double default_value,
+    public DialogNumber<Double> addDouble(String label, double defaultValue,
                                            String units, int decimals)
-        {return add_number(default_value, M_doubles);}
+        {return addNumber(defaultValue, M_doubles);}
     /** {@inheritDoc} */ @Override
-    public DialogNumber<Integer> add_integer(String label, int default_value,
+    public DialogNumber<Integer> addInteger(String label, int defaultValue,
                                              String units)
-        {return add_number(default_value, M_integers);}
+        {return addNumber(defaultValue, M_integers);}
     /** Does nothing.  Because TestDialog doesn't actually do anything
      * gui-related, this function does nothing.
      *
      * @param panel A Panel that won't actually get added.
      */
     @Override
-    public void add_panel(Panel panel) {}
+    public void addPanel(Panel panel) {}
     /** {@inheritDoc} */ @Override
-    public Supplier<String> add_radio_buttons(String label,
-                                              String default_value,
+    public Supplier<String> addRadioButtons(String label,
+                                              String defaultValue,
                                               String[] choices,
                                               int rows, int columns)
-        {return add(default_value, M_strings);}
+        {return add(defaultValue, M_strings);}
     /** {@inheritDoc} */ @Override
-    public Supplier<String> add_text_box(String label, String default_value)
-        {return add(default_value, M_strings);}
+    public Supplier<String> addTextBox(String label, String defaultValue)
+        {return add(defaultValue, M_strings);}
     /** Does nothing.  Because TestDialog doesn't actually do anything
      * gui-related, this function does nothing.
      *
@@ -102,7 +102,7 @@ public class TestDialog implements DPDialog {
      * @return <code>null</code>.
      */
     @Override
-    public Label add_message(String message) {return null;}
+    public Label addMessage(String message) {return null;}
     /** Does nothing.  Because TestDialog doesn't actually do anything
      * gui-related, this function does nothing.
      *
@@ -110,7 +110,7 @@ public class TestDialog implements DPDialog {
      * @return <code>null</code>.
      */
     @Override
-    public Label add_message(String message, Color color) {return null;}
+    public Label addMessage(String message, Color color) {return null;}
     /** Does nothing.  Because TestDialog doesn't actually do anything
      * gui-related, this function does nothing.
      *
@@ -118,7 +118,7 @@ public class TestDialog implements DPDialog {
      * @return -1.
      */
     @Override
-    public int string_width(String string) {return -1;}
+    public int stringWidth(String string) {return -1;}
 
     /** Get a boolean from the dialog.
      *
@@ -126,16 +126,16 @@ public class TestDialog implements DPDialog {
      * @return A {@link TestSupplier TestSupplier&lt;Boolean&gt;} that you can
      *         use to change the value on this "dialog".
      */
-    public TestSupplier<Boolean> get_boolean(int index)
+    public TestSupplier<Boolean> getBoolean(int index)
         {return M_booleans.get(index);}
     /** Get a string from the dialog.  It could have been added with
-     * {@link add_choice}, {@link add_radio_buttons}, or {@link add_text_box}.
+     * {@link addChoice}, {@link addRadioButtons}, or {@link addTextBox}.
      *
      * @param index The index of the string you want to get.
      * @return A {@link TestSupplier TestSupplier&lt;String&gt;} that you can
      *         use to change the value on this "dialog".
      */
-    public TestSupplier<String> get_string(int index)
+    public TestSupplier<String> getString(int index)
         {return M_strings.get(index);}
     /** Get a string index from the dialog.  Note that this uses an integer,
      * not a string, because string indices internally use these integers and
@@ -145,15 +145,15 @@ public class TestDialog implements DPDialog {
      * @return A {@link TestSupplier TestSupplier&lt;Integer&gt;} that you can
      *         use to change the value on this "dialog".
      */
-    public TestSupplier<Integer> get_string_index(int index)
-        {return M_string_choices.get(index);}
+    public TestSupplier<Integer> getStringIndex(int index)
+        {return M_stringChoices.get(index);}
     /** Get a double from the dialog.
      *
      * @param index The index of the double you want to get.
      * @return A {@link TestSupplier TestSupplier&lt;Double&gt;} that you can
      *         use to change the value on this "dialog".
      */
-    public TestDialogNumber<Double> get_double(int index)
+    public TestDialogNumber<Double> getDouble(int index)
         {return M_doubles.get(index);}
     /** Get a integer from the dialog.
      *
@@ -161,30 +161,30 @@ public class TestDialog implements DPDialog {
      * @return A {@link TestSupplier TestSupplier&lt;Integer&gt;} that you can
      *         use to change the value on this "dialog".
      */
-    public TestDialogNumber<Integer> get_integer(int index)
+    public TestDialogNumber<Integer> getInteger(int index)
         {return M_integers.get(index);}
 
-    private <T> Supplier<T> add(T default_value,
+    private <T> Supplier<T> add(T defaultValue,
                                 ArrayList<TestSupplier<T>> list)
     {
         TestSupplier<T> sup = new TestSupplier<T>();
-        sup.value = default_value;
+        sup.value = defaultValue;
         list.add(sup);
         return sup;
     }
     private <T extends Number & Comparable<T>>
-    TestDialogNumber<T> add_number(T default_value,
+    TestDialogNumber<T> addNumber(T defaultValue,
                                    ArrayList<TestDialogNumber<T>> list)
     {
         TestDialogNumber<T> num = new TestDialogNumber<>();
-        num.value = default_value;
+        num.value = defaultValue;
         list.add(num);
         return num;
     }
 
     private ArrayList<TestSupplier    <Boolean>> M_booleans = new ArrayList<>();
     private ArrayList<TestSupplier    <String>>  M_strings = new ArrayList<>();
-    private ArrayList<TestSupplier    <Integer>> M_string_choices =
+    private ArrayList<TestSupplier    <Integer>> M_stringChoices =
         new ArrayList<>();
     private ArrayList<TestDialogNumber<Double>>  M_doubles = new ArrayList<>();
     private ArrayList<TestDialogNumber<Integer>> M_integers = new ArrayList<>();

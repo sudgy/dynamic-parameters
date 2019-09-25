@@ -32,7 +32,7 @@ import org.scijava.Context;
  * group of parameters that you should be able to manipulate as one unit.
  * It deals with adding and reading from the dialog and the preferences.
  * <p>
- * To use it, extend from it and then always use {@link add_parameter} to
+ * To use it, extend from it and then always use {@link addParameter} to
  * add parameters.  You may not add parameters in the constructor, and you
  * should instead add them in {@link initialize}.  If you want to see an example
  * of using this class, see the source for {@link PluginParameter}.
@@ -51,51 +51,51 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
     /**
      * Add this parameter to the dialog.
      * <p>
-     * This calls add_to_dialog to every parameter in this one, as long as it is
+     * This calls addToDialog to every parameter in this one, as long as it is
      * {@link visible visible()}.
      */
-    @Override public void add_to_dialog(DPDialog dialog)
+    @Override public void addToDialog(DPDialog dialog)
     {
         for (DParameter<?> param : M_params) {
             if (param.visible()) {
-                param.add_to_dialog(dialog);
+                param.addToDialog(dialog);
             }
         }
     }
     /**
      * Read this parameter from the dialog.
      * <p>
-     * This calls read_from_dialog to every parameter in this one, as long as it is
+     * This calls readFromDialog to every parameter in this one, as long as it is
      * {@link visible visible()}.
      */
-    @Override public void read_from_dialog()
+    @Override public void readFromDialog()
     {
         for (DParameter<?> param : M_params) {
             if (param.visible()) {
-                param.read_from_dialog();
+                param.readFromDialog();
             }
         }
     }
     /**
      * Save the values of this parameter to the preferences.
      * <p>
-     * This calls save_to_prefs to every parameter in this one.
+     * This calls saveToPrefs to every parameter in this one.
      */
-    @Override public void save_to_prefs(Class<?> c, String name)
+    @Override public void saveToPrefs(Class<?> c, String name)
     {
         for (DParameter<?> param : M_params) {
-            param.save_to_prefs(c, name + "." + param.label());
+            param.saveToPrefs(c, name + "." + param.label());
         }
     }
     /**
      * Read the values of this parameter from the preferences.
      * <p>
-     * This calls read_from_prefs to every parameter in this one.
+     * This calls readFromPrefs to every parameter in this one.
      */
-    @Override public void read_from_prefs(Class<?> c, String name)
+    @Override public void readFromPrefs(Class<?> c, String name)
     {
         for (DParameter<?> param : M_params) {
-            param.read_from_prefs(c, name + "." + param.label());
+            param.readFromPrefs(c, name + "." + param.label());
         }
     }
     /**
@@ -104,23 +104,23 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
      * This returns <code>true</code> if any of the contained parameter's
      * visibility has changed.
      */
-    @Override public boolean visibility_changed()
+    @Override public boolean visibilityChanged()
     {
         for (DParameter<?> param : M_params) {
-            if (param.visibility_changed()) return true;
+            if (param.visibilityChanged()) return true;
         }
-        return super.visibility_changed();
+        return super.visibilityChanged();
     }
     /** {@inheritDoc}
      * <p>
-     * This calls refresh_visibility on all of the contained parameters.
+     * This calls refreshVisibility on all of the contained parameters.
      */
-    @Override public void refresh_visibility()
+    @Override public void refreshVisibility()
     {
         for (DParameter<?> param : M_params) {
-            param.refresh_visibility();
+            param.refreshVisibility();
         }
-        super.refresh_visibility();
+        super.refreshVisibility();
     }
     /** The width that this parameter needs on the dialog, if needed.
      * <p>
@@ -139,13 +139,13 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
      * If any of the contained parameters have an error and are visibible, this
      * will return one of those.
      */
-    @Override public String get_error()
+    @Override public String getError()
     {
-        String result = super.get_error();
+        String result = super.getError();
         if (result == null) {
             for (DParameter<?> param : M_params) {
                 if (param.visible()) {
-                    result = param.get_error();
+                    result = param.getError();
                     if (result != null) break;
                 }
             }
@@ -157,13 +157,13 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
      * If any of the contained parameters have a warning and are visibible, this
      * will return one of those.
      */
-    @Override public String get_warning()
+    @Override public String getWarning()
     {
-        String result = super.get_warning();
+        String result = super.getWarning();
         if (result == null) {
             for (DParameter<?> param : M_params) {
                 if (param.visible()) {
-                    result = param.get_warning();
+                    result = param.getWarning();
                     if (result != null) break;
                 }
             }
@@ -182,10 +182,10 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
         return false;
     }
     /** Set the Harvester for all contained parameters. */
-    @Override public void set_harvester(Harvester h)
+    @Override public void setHarvester(Harvester h)
     {
         for (DParameter<?> param : M_params) {
-            param.set_harvester(h);
+            param.setHarvester(h);
         }
     }
 
@@ -207,20 +207,20 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
      *             instance of the outer class.
      * @return The new parameter.
      */
-    protected <T extends DParameter<?>> T add_parameter(Class<T> cls, Object... args)
+    protected <T extends DParameter<?>> T addParameter(Class<T> cls, Object... args)
     {
-        Class<?>[] args_c = new Class<?>[args.length];
+        Class<?>[] argsC = new Class<?>[args.length];
         if (args.length != 0) {
             for (int i = 0; i < args.length; ++i) {
-                args_c[i] = args[i].getClass();
+                argsC[i] = args[i].getClass();
             }
         }
         try {
             T result;
-            Constructor<T> constr = cls.getConstructor(args_c);
+            Constructor<T> constr = cls.getConstructor(argsC);
             constr.setAccessible(true);
             result = constr.newInstance(args);
-            add_premade_parameter(result);
+            addPremadeParameter(result);
             return result;
         }
         catch (NoSuchMethodException e) {throw new RuntimeException(e);}
@@ -230,14 +230,14 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
     }
     /** Add a pre-made parameter to this parameter.
      * <p>
-     * If you are unable to use {@link add_parameter} for any reason, use this
+     * If you are unable to use {@link addParameter} for any reason, use this
      * function to add the parameter and still do all of the initialization that
-     * add_parameter does.  You may not pass in a parameter that already has a
+     * addParameter does.  You may not pass in a parameter that already has a
      * context.
      *
      * @param param The parameter to add.
      */
-    protected void add_premade_parameter(DParameter param)
+    protected void addPremadeParameter(DParameter param)
     {
         Context context = getContext();
         if (context != null) {
@@ -251,23 +251,23 @@ public abstract class HoldingParameter<T> extends AbstractDParameter<T> {
      * @param param The parameter to remove.
      * @return <code>true</code> if the parameter was successfully removed.
      */
-    protected boolean remove_parameter(DParameter<?> param)
+    protected boolean removeParameter(DParameter<?> param)
         {return M_params.remove(param);}
     /** Remove a parameter by index.
      *
      * @param index The index of the parameter to remove.
      * @return The parameter that was removed.
      */
-    protected DParameter<?> remove_parameter(int index)
+    protected DParameter<?> removeParameter(int index)
         {return M_params.remove(index);}
     /** Remove all parameters. */
-    protected void clear_parameters()
+    protected void clearParameters()
         {M_params.clear();}
     /** Get all of the plugins that are in this plugin.
      *
      * @return An Iterable that iterates through all of the plugins.
      */
-    protected Iterable<DParameter<?>> get_all_params()
+    protected Iterable<DParameter<?>> getAllParams()
     {
         return M_params;
     }

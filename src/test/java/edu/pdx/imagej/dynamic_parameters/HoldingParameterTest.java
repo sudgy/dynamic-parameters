@@ -24,123 +24,123 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 public class HoldingParameterTest {
-    @Test public void test_add_to_dialog()
+    @Test public void testAddToDialog()
     {
         TestHoldingParameter hold = new TestHoldingParameter();
-        TestParameter param1 = hold.add_parameter(TestParameter.class);
-        TestParameter param2 = hold.add_parameter(TestParameter.class);
-        param2.set_new_visibility(false);
-        param2.refresh_visibility();
-        hold.add_to_dialog(null);
-        assertTrue(param1.has_added_to_dialog(), "Visible parameters should be added to the dialog.");
-        assertTrue(!param2.has_added_to_dialog(), "Invisible parameters should not be added to the dialog.");
+        TestParameter param1 = hold.addParameter(TestParameter.class);
+        TestParameter param2 = hold.addParameter(TestParameter.class);
+        param2.setNewVisibility(false);
+        param2.refreshVisibility();
+        hold.addToDialog(null);
+        assertTrue(param1.hasAddedToDialog(), "Visible parameters should be added to the dialog.");
+        assertTrue(!param2.hasAddedToDialog(), "Invisible parameters should not be added to the dialog.");
     }
-    @Test public void test_read_from_dialog()
+    @Test public void testReadFromDialog()
     {
         TestHoldingParameter hold = new TestHoldingParameter();
-        TestParameter param1 = hold.add_parameter(TestParameter.class);
-        TestParameter param2 = hold.add_parameter(TestParameter.class);
-        param2.set_new_visibility(false);
-        param2.refresh_visibility();
-        hold.read_from_dialog();
-        assertTrue(param1.has_read_from_dialog(), "Visible parameters should be read from the dialog.");
-        assertTrue(!param2.has_read_from_dialog(), "Invisible parameters should not be read from the dialog.");
+        TestParameter param1 = hold.addParameter(TestParameter.class);
+        TestParameter param2 = hold.addParameter(TestParameter.class);
+        param2.setNewVisibility(false);
+        param2.refreshVisibility();
+        hold.readFromDialog();
+        assertTrue(param1.hasReadFromDialog(), "Visible parameters should be read from the dialog.");
+        assertTrue(!param2.hasReadFromDialog(), "Invisible parameters should not be read from the dialog.");
     }
-    @Test public void test_save_to_prefs()
+    @Test public void testSaveToPrefs()
     {
         TestHoldingParameter hold = new TestHoldingParameter();
-        TestParameter param1 = hold.add_parameter(TestParameter.class);
-        TestParameter param2 = hold.add_parameter(TestParameter.class);
-        param2.set_new_visibility(false);
-        param2.refresh_visibility();
-        hold.save_to_prefs(null, null);
-        assertTrue(param1.has_saved_to_prefs(), "Visible parameters should be saved to prefs.");
-        assertTrue(param2.has_saved_to_prefs(), "Invisible parameters should be saved to prefs.");
+        TestParameter param1 = hold.addParameter(TestParameter.class);
+        TestParameter param2 = hold.addParameter(TestParameter.class);
+        param2.setNewVisibility(false);
+        param2.refreshVisibility();
+        hold.saveToPrefs(null, null);
+        assertTrue(param1.hasSavedToPrefs(), "Visible parameters should be saved to prefs.");
+        assertTrue(param2.hasSavedToPrefs(), "Invisible parameters should be saved to prefs.");
     }
-    @Test public void test_read_from_prefs()
+    @Test public void testReadFromPrefs()
     {
         TestHoldingParameter hold = new TestHoldingParameter();
-        TestParameter param1 = hold.add_parameter(TestParameter.class);
-        TestParameter param2 = hold.add_parameter(TestParameter.class);
-        param2.set_new_visibility(false);
-        param2.refresh_visibility();
-        hold.read_from_prefs(null, null);
-        assertTrue(param1.has_read_from_prefs(), "Visible parameters should be saved to prefs.");
-        assertTrue(param2.has_read_from_prefs(), "Invisible parameters should be saved to prefs.");
+        TestParameter param1 = hold.addParameter(TestParameter.class);
+        TestParameter param2 = hold.addParameter(TestParameter.class);
+        param2.setNewVisibility(false);
+        param2.refreshVisibility();
+        hold.readFromPrefs(null, null);
+        assertTrue(param1.hasReadFromPrefs(), "Visible parameters should be saved to prefs.");
+        assertTrue(param2.hasReadFromPrefs(), "Invisible parameters should be saved to prefs.");
     }
-    @Test public void test_error()
+    @Test public void testError()
     {
         TestHoldingParameter hold = new TestHoldingParameter();
-        TestParameter param1 = hold.add_parameter(TestParameter.class);
-        TestParameter param2 = hold.add_parameter(TestParameter.class);
-        param2.set_new_visibility(false);
-        param2.refresh_visibility();
+        TestParameter param1 = hold.addParameter(TestParameter.class);
+        TestParameter param2 = hold.addParameter(TestParameter.class);
+        param2.setNewVisibility(false);
+        param2.refreshVisibility();
 
-        param1.set_error("a");
-        assertEquals(hold.get_error(), "a", "A parameter's error should be propagated.");
-        param1.set_error(null);
-        assertTrue(hold.get_error() == null, "With no more errors in the parameters, there should be no error.");
+        param1.setError("a");
+        assertEquals(hold.getError(), "a", "A parameter's error should be propagated.");
+        param1.setError(null);
+        assertTrue(hold.getError() == null, "With no more errors in the parameters, there should be no error.");
 
-        param2.set_error("b");
-        assertTrue(hold.get_error() == null, "If an invisible parameter has an error, it should not be an error.");
-        param2.set_error(null);
+        param2.setError("b");
+        assertTrue(hold.getError() == null, "If an invisible parameter has an error, it should not be an error.");
+        param2.setError(null);
 
-        hold.set_error("c");
-        assertEquals(hold.get_error(), "c", "The holding parameter should be able to have its own error.");
-        param1.set_error("d");
-        assertEquals(hold.get_error(), "c", "The holding parameter's error should override a parameter's error.");
-        hold.set_error(null);
-        assertEquals(hold.get_error(), "d", "After removing the holding parameter's error, a parameter's error should be the error.");
+        hold.setError("c");
+        assertEquals(hold.getError(), "c", "The holding parameter should be able to have its own error.");
+        param1.setError("d");
+        assertEquals(hold.getError(), "c", "The holding parameter's error should override a parameter's error.");
+        hold.setError(null);
+        assertEquals(hold.getError(), "d", "After removing the holding parameter's error, a parameter's error should be the error.");
     }
     // This class is basically HoldingParameter, but with all protected things public
     private static class TestHoldingParameter extends HoldingParameter<Boolean> {
         public TestHoldingParameter() {super("");}
-        @Override public Boolean get_value() {return null;}
-        @Override public <T extends DParameter<?>> T add_parameter(Class<T> cls, Object... args) {return super.add_parameter(cls, args);}
-        @Override public boolean remove_parameter(DParameter<?> param) {return super.remove_parameter(param);}
-        @Override public DParameter<?> remove_parameter(int index) {return super.remove_parameter(index);}
-        @Override public void clear_parameters() {super.clear_parameters();}
+        @Override public Boolean getValue() {return null;}
+        @Override public <T extends DParameter<?>> T addParameter(Class<T> cls, Object... args) {return super.addParameter(cls, args);}
+        @Override public boolean removeParameter(DParameter<?> param) {return super.removeParameter(param);}
+        @Override public DParameter<?> removeParameter(int index) {return super.removeParameter(index);}
+        @Override public void clearParameters() {super.clearParameters();}
     }
     // This class just override all of the functions to say that they have happened
     private static class TestParameter extends AbstractDParameter<Boolean> {
         public TestParameter() {super("");}
-        @Override public Boolean get_value() {return null;}
-        @Override public void save_to_prefs(Class<?> cls, String name)
-            {M_has_saved_to_prefs = true;}
-        @Override public void read_from_prefs(Class<?> cls, String name)
-            {M_has_read_from_prefs = true;}
-        @Override public void add_to_dialog(DPDialog dialog)
-            {M_has_added_to_dialog = true;}
-        @Override public void read_from_dialog()
-            {M_has_read_from_dialog = true;}
-        public boolean has_saved_to_prefs()
+        @Override public Boolean getValue() {return null;}
+        @Override public void saveToPrefs(Class<?> cls, String name)
+            {M_hasSavedToPrefs = true;}
+        @Override public void readFromPrefs(Class<?> cls, String name)
+            {M_hasReadFromPrefs = true;}
+        @Override public void addToDialog(DPDialog dialog)
+            {M_hasAddedToDialog = true;}
+        @Override public void readFromDialog()
+            {M_hasReadFromDialog = true;}
+        public boolean hasSavedToPrefs()
         {
-            boolean result = M_has_saved_to_prefs;
-            M_has_saved_to_prefs = false;
+            boolean result = M_hasSavedToPrefs;
+            M_hasSavedToPrefs = false;
             return result;
         }
-        public boolean has_read_from_prefs()
+        public boolean hasReadFromPrefs()
         {
-            boolean result = M_has_read_from_prefs;
-            M_has_read_from_prefs = false;
+            boolean result = M_hasReadFromPrefs;
+            M_hasReadFromPrefs = false;
             return result;
         }
-        public boolean has_added_to_dialog()
+        public boolean hasAddedToDialog()
         {
-            boolean result = M_has_added_to_dialog;
-            M_has_added_to_dialog = false;
+            boolean result = M_hasAddedToDialog;
+            M_hasAddedToDialog = false;
             return result;
         }
-        public boolean has_read_from_dialog()
+        public boolean hasReadFromDialog()
         {
-            boolean result = M_has_read_from_dialog;
-            M_has_read_from_dialog = false;
+            boolean result = M_hasReadFromDialog;
+            M_hasReadFromDialog = false;
             return result;
         }
 
-        private boolean M_has_saved_to_prefs = false;
-        private boolean M_has_read_from_prefs = false;
-        private boolean M_has_added_to_dialog = false;
-        private boolean M_has_read_from_dialog = false;
+        private boolean M_hasSavedToPrefs = false;
+        private boolean M_hasReadFromPrefs = false;
+        private boolean M_hasAddedToDialog = false;
+        private boolean M_hasReadFromDialog = false;
     }
 }

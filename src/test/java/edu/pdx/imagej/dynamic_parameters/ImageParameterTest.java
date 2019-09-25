@@ -30,20 +30,20 @@ import org.scijava.Context;
 import org.scijava.prefs.PrefService;
 
 public class ImageParameterTest {
-    @Test public void test_dialog()
+    @Test public void testDialog()
     {
         TestDialog dialog = new TestDialog();
         ImageParameter param =
             new ImageParameter("", new ImagePlus[]{M_imp1, M_imp2});
-        param.add_to_dialog(dialog);
-        assertEquals(M_imp1, param.get_value(), "ImageParameter should start "
+        param.addToDialog(dialog);
+        assertEquals(M_imp1, param.getValue(), "ImageParameter should start "
             + "with the first image.");
-        dialog.get_string_index(0).value = 1;
-        param.read_from_dialog();
-        assertEquals(M_imp2, param.get_value(), "ImageParameter should read "
+        dialog.getStringIndex(0).value = 1;
+        param.readFromDialog();
+        assertEquals(M_imp2, param.getValue(), "ImageParameter should read "
             + "from dialogs correctly.");
     }
-    @Test public void test_prefs()
+    @Test public void testPrefs()
     {
         Context context = new Context(PrefService.class);
         ImageParameter param1 =
@@ -58,18 +58,18 @@ public class ImageParameterTest {
         context.inject(param2);
         context.inject(param3);
         context.inject(param4);
-        param1.save_to_prefs(getClass(), "a");
+        param1.saveToPrefs(getClass(), "a");
 
-        param2.read_from_prefs(getClass(), "a");
-        assertEquals(M_imp1, param2.get_value(), "ImageParameter should read "
+        param2.readFromPrefs(getClass(), "a");
+        assertEquals(M_imp1, param2.getValue(), "ImageParameter should read "
             + "from prefs correctly.");
 
-        param3.read_from_prefs(getClass(), "a");
-        assertEquals(M_imp3, param3.get_value(), "ImageParameter should read "
+        param3.readFromPrefs(getClass(), "a");
+        assertEquals(M_imp3, param3.getValue(), "ImageParameter should read "
             + "a different image from prefs as long as it has the same name.");
 
-        param4.read_from_prefs(getClass(), "a");
-        assertEquals(M_imp2, param4.get_value(), "ImageParameter should not do "
+        param4.readFromPrefs(getClass(), "a");
+        assertEquals(M_imp2, param4.getValue(), "ImageParameter should not do "
             + "anything when reading from prefs if no image of that name was "
             + "saved.");
     }

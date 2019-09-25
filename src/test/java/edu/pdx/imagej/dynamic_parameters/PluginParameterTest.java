@@ -31,7 +31,7 @@ import org.scijava.plugin.PluginService;
 import org.scijava.prefs.PrefService;
 
 public class PluginParameterTest {
-    @Test public void test_single()
+    @Test public void testSingle()
     {
         Context context = new Context(PluginService.class, PrefService.class);
         PluginParameter<TestPluginType2> param
@@ -40,104 +40,104 @@ public class PluginParameterTest {
         param.initialize();
 
         TestDialog dialog = new TestDialog();
-        param.add_to_dialog(dialog);
+        param.addToDialog(dialog);
         try {
-            dialog.get_string(0);
+            dialog.getString(0);
             assertTrue(false, "PluginParameter should not give a choice when "
                 + "there is only one thing to choose from.");
         }
         catch (IndexOutOfBoundsException e) {}
     }
-    @Test public void test_multi()
+    @Test public void testMulti()
     {
         Context context = new Context(PluginService.class, PrefService.class);
         PluginParameter<TestPluginType1> param
             = new PluginParameter<>("", TestPluginType1.class);
         context.inject(param);
-        param.set_enabled(TestPlugin1.class, true);
+        param.setEnabled(TestPlugin1.class, true);
         param.initialize();
 
         TestDialog dialog = new TestDialog();
-        param.add_to_dialog(dialog);
-        assertEquals(dialog.get_string(0).value, "2", "PluginParameter should "
+        param.addToDialog(dialog);
+        assertEquals(dialog.getString(0).value, "2", "PluginParameter should "
             + "start on the highest-priority plugin.");
 
-        dialog.get_string(0).value = "1";
-        param.read_from_dialog();
-        assertTrue(param.get_value() != null, "PluginParameter should find all "
+        dialog.getString(0).value = "1";
+        param.readFromDialog();
+        assertTrue(param.getValue() != null, "PluginParameter should find all "
             + "plugins of the given type.");
 
-        dialog.get_string(0).value = "0";
-        param.read_from_dialog();
-        assertTrue(param.get_value() == null, "An incorrect value in "
+        dialog.getString(0).value = "0";
+        param.readFromDialog();
+        assertTrue(param.getValue() == null, "An incorrect value in "
              + "PluginParameter should cause a null value.");
     }
-    @Test public void test_sub_param()
+    @Test public void testSubParam()
     {
         Context context = new Context(PluginService.class, PrefService.class);
         PluginParameter<TestPluginType1> param
             = new PluginParameter<>("", TestPluginType1.class);
         context.inject(param);
-        param.set_enabled(TestPlugin1.class, true);
+        param.setEnabled(TestPlugin1.class, true);
         param.initialize();
-        param.refresh_visibility();
+        param.refreshVisibility();
 
         TestDialog dialog = new TestDialog();
-        param.add_to_dialog(dialog);
-        assertEquals(3, dialog.get_integer(0).value.intValue(),
+        param.addToDialog(dialog);
+        assertEquals(3, dialog.getInteger(0).value.intValue(),
             "PluginParameter should add the sub parameter.");
         try {
-            dialog.get_double(0);
+            dialog.getDouble(0);
             assertTrue(false, "PluginParameter should not add a non-visible "
                 + "sub parameter.");
         }
         catch (IndexOutOfBoundsException e) {}
 
-        dialog.get_string(0).value = "1";
-        param.read_from_dialog();
-        assertTrue(param.visibility_changed(), "Changing the selected parameter"
-            + " should cause visibility_changed() to be true.");
-        param.refresh_visibility();
+        dialog.getString(0).value = "1";
+        param.readFromDialog();
+        assertTrue(param.visibilityChanged(), "Changing the selected parameter"
+            + " should cause visibilityChanged() to be true.");
+        param.refreshVisibility();
 
         dialog = new TestDialog();
-        param.add_to_dialog(dialog);
-        assertEquals(4.0, dialog.get_double(0).value.doubleValue(),
+        param.addToDialog(dialog);
+        assertEquals(4.0, dialog.getDouble(0).value.doubleValue(),
             "PluginParameter should add the sub parameter after it changed.");
         try {
-            dialog.get_integer(0);
+            dialog.getInteger(0);
             assertTrue(false, "PluginParameter should not add a non-visible "
                 + "sub parameter after it changed.");
         }
         catch (IndexOutOfBoundsException e) {}
 
-        dialog.get_string(0).value = "4";
-        param.read_from_dialog();
-        assertTrue(param.get_value() instanceof TestPlugin4, "PluginParameter "
+        dialog.getString(0).value = "4";
+        param.readFromDialog();
+        assertTrue(param.getValue() instanceof TestPlugin4, "PluginParameter "
             + "should work correctly even if the current plugin has no "
             + "parameter.");
     }
-    @Test public void test_enabled()
+    @Test public void testEnabled()
     {
         Context context = new Context(PluginService.class, PrefService.class);
         PluginParameter<TestPluginType1> param
             = new PluginParameter<>("", TestPluginType1.class);
         context.inject(param);
-        param.set_enabled(TestPlugin1.class, false);
+        param.setEnabled(TestPlugin1.class, false);
         param.initialize();
         TestDialog dialog = new TestDialog();
-        param.add_to_dialog(dialog);
-        dialog.get_string(0).value = "1";
-        param.read_from_dialog();
-        assertTrue(param.get_value() == null);
+        param.addToDialog(dialog);
+        dialog.getString(0).value = "1";
+        param.readFromDialog();
+        assertTrue(param.getValue() == null);
 
         param = new PluginParameter<>("", TestPluginType1.class);
         context.inject(param);
-        param.set_enabled(TestPlugin1.class, true);
+        param.setEnabled(TestPlugin1.class, true);
         param.initialize();
         dialog = new TestDialog();
-        param.add_to_dialog(dialog);
-        dialog.get_string(0).value = "1";
-        param.read_from_dialog();
-        assertTrue(param.get_value() != null);
+        param.addToDialog(dialog);
+        dialog.getString(0).value = "1";
+        param.readFromDialog();
+        assertTrue(param.getValue() != null);
     }
 }

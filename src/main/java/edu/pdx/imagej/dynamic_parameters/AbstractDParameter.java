@@ -38,7 +38,7 @@ import org.scijava.prefs.PrefService;
  * so all of the benefits that you get from it you get from this class.  Second,
  * this class implements most of the functions from {@link DParameter} with
  * sensible defaults, leaving only the <code>add</code> and <code>read</code>
- * functions and {@link get_value} to implement.  Of course, if you want, you
+ * functions and {@link getValue} to implement.  Of course, if you want, you
  * can override any of these defaults.
  */
 public abstract class AbstractDParameter<T> extends AbstractRichPlugin implements DParameter<T> {
@@ -69,16 +69,16 @@ public abstract class AbstractDParameter<T> extends AbstractRichPlugin implement
     /** {@inheritDoc} */
     @Override public boolean visible() {return M_visible;}
     /** {@inheritDoc} */
-    @Override public boolean visibility_changed() {return M_visible != M_new_visible;}
+    @Override public boolean visibilityChanged() {return M_visible != M_newVisible;}
     /** {@inheritDoc} */
-    @Override public void set_new_visibility(boolean value) {M_new_visible = value;}
+    @Override public void setNewVisibility(boolean value) {M_newVisible = value;}
     /** {@inheritDoc} */
-    @Override public void refresh_visibility() {M_visible = M_new_visible;}
+    @Override public void refreshVisibility() {M_visible = M_newVisible;}
     /** {@inheritDoc}
      * <p>
      * This function defaults to returning <code>false</code>.
      */
-    @Override public boolean reconstruction_needed() {return false;}
+    @Override public boolean reconstructionNeeded() {return false;}
     /** {@inheritDoc}
      * <p>
      * This function defaults to returning zero.
@@ -87,15 +87,15 @@ public abstract class AbstractDParameter<T> extends AbstractRichPlugin implement
     /** {@inheritDoc}
      * <p>
      * This function defaults to returning the string passed into the last call
-     * to {@link set_error}.
+     * to {@link setError}.
      */
-    @Override public String get_error() {return M_error;}
+    @Override public String getError() {return M_error;}
     /** {@inheritDoc}
      * <p>
      * This function defaults to returning the string passed into the last call
-     * to {@link set_warning}.
+     * to {@link setWarning}.
      */
-    @Override public String get_warning() {return M_warning;}
+    @Override public String getWarning() {return M_warning;}
     /** {@inheritDoc}
      * <p>
      * This function defaults to returning false.
@@ -106,35 +106,35 @@ public abstract class AbstractDParameter<T> extends AbstractRichPlugin implement
      * This function defaults to setting <code>M_harvester</code> to
      * <code>h</code>.
      */
-    @Override public void set_harvester(Harvester h) {M_harvester = h;}
+    @Override public void setHarvester(Harvester h) {M_harvester = h;}
 
     /** Sets the error.
      * <p>
      * The string passed into this function will be used as the error for
-     * {@link get_error}.
+     * {@link getError}.
      *
      * @param error The error string
      */
-    protected final void set_error(String error) {M_error = error;}
+    protected final void setError(String error) {M_error = error;}
     /** Sets the warning.
      * <p>
      * The string passed into this function will be used as the warning for
-     * {@link get_warning}.
+     * {@link getWarning}.
      *
      * @param warning The warning string
      */
-    protected final void set_warning(String warning) {M_warning = warning;}
+    protected final void setWarning(String warning) {M_warning = warning;}
     /** Gets the <a href="https://javadoc.scijava.org/SciJava/org/scijava/prefs/PrefService.html">PrefService</a>
      * associated with the context.
      * <p>
-     * Use it to implement {@link read_from_prefs read_from_prefs}.
+     * Use it to implement {@link readFromPrefs readFromPrefs}.
      *
      * @return The PrefService associated with the context
      */
     protected final PrefService prefs() {return context().getService(PrefService.class);}
     /** The harvester that this parameter is in.
      * <p>
-     * It is set by {@link set_harvester} after initialization, but before the
+     * It is set by {@link setHarvester} after initialization, but before the
      * dialog appears.
      */
     protected Harvester M_harvester;
@@ -143,5 +143,5 @@ public abstract class AbstractDParameter<T> extends AbstractRichPlugin implement
     private String M_error;
     private String M_warning;
     private boolean M_visible = true;
-    private boolean M_new_visible = true;
+    private boolean M_newVisible = true;
 }

@@ -41,46 +41,46 @@ public class ChoiceParameter extends AbstractDParameter<String> {
      *
      * @param label The label for this parameter to be used on the dialog.
      * @param items The choices that can be picked from.
-     * @param default_item The starting string to be choosing.
+     * @param defaultItem The starting string to be choosing.
      */
-    public ChoiceParameter(String label, String[] items, String default_item)
+    public ChoiceParameter(String label, String[] items, String defaultItem)
     {
         super(label);
         M_label = label;
         M_items = items;
-        M_value = default_item;
-        M_default_value = default_item;
+        M_value = defaultItem;
+        M_defaultValue = defaultItem;
     }
     /** Gets the string from this parameter.
      *
      * @return The string from this parameter
      */
     @Override
-    public String get_value() {return M_value;}
+    public String getValue() {return M_value;}
 
     /** Adds this parameter to the dialog.
      */
     @Override
-    public void add_to_dialog(DPDialog dialog)
+    public void addToDialog(DPDialog dialog)
     {
-        M_supplier = dialog.add_choice(M_label, M_value, M_items);
+        M_supplier = dialog.addChoice(M_label, M_value, M_items);
     }
     /** Reads this parameter from the dialog.
      */
     @Override
-    public void read_from_dialog()
+    public void readFromDialog()
     {
         M_value = M_supplier.get();
     }
     /** Save this parameter to {@link prefs}
      */
     @Override
-    public void save_to_prefs(Class<?> c, String name)
+    public void saveToPrefs(Class<?> c, String name)
         {prefs().put(c, name, M_value);}
     /** Read this parameter from {@link prefs}
      */
     @Override
-    public void read_from_prefs(Class<?> c, String name)
+    public void readFromPrefs(Class<?> c, String name)
     {
         M_value = prefs().get(c, name, M_value);
         // The prefs can get funky and return something that is not a choice.
@@ -88,12 +88,12 @@ public class ChoiceParameter extends AbstractDParameter<String> {
         for (String s : M_items) {
             if (s.equals(M_value)) return;
         }
-        M_value = M_default_value;
+        M_value = M_defaultValue;
     }
 
     private String M_label;
     private String[] M_items;
     private String M_value;
-    private String M_default_value;
+    private String M_defaultValue;
     private Supplier<String> M_supplier;
 }

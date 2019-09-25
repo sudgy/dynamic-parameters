@@ -27,47 +27,47 @@ import org.scijava.Context;
 import org.scijava.prefs.PrefService;
 
 public class IntParameterTest {
-    @Test public void test_base()
+    @Test public void testBase()
     {
         IntParameter param = new IntParameter(1, "");
-        assertEquals(param.get_value().intValue(), 1, "IntParameter should start with its default value.");
+        assertEquals(param.getValue().intValue(), 1, "IntParameter should start with its default value.");
     }
-    @Test public void test_bounds()
+    @Test public void testBounds()
     {
         TestDialog dialog = new TestDialog();
         IntParameter param = new IntParameter(2, "");
-        param.add_to_dialog(dialog); // Bounds only works through the dialog
-        param.set_bounds(0, 1);
-        assertTrue(param.get_error() != null, "After setting bounds such that the value is outside the bounds, there should be an error.");
-        param.set_bounds(0, 3);
-        assertTrue(param.get_error() == null, "After setting bounds such that the value is inside the bounds, there should be no error.");
+        param.addToDialog(dialog); // Bounds only works through the dialog
+        param.setBounds(0, 1);
+        assertTrue(param.getError() != null, "After setting bounds such that the value is outside the bounds, there should be an error.");
+        param.setBounds(0, 3);
+        assertTrue(param.getError() == null, "After setting bounds such that the value is inside the bounds, there should be no error.");
     }
-    @Test public void test_dialog()
+    @Test public void testDialog()
     {
         TestDialog dialog = new TestDialog();
         IntParameter param = new IntParameter(1, "");
-        param.add_to_dialog(dialog);
-        dialog.get_integer(0).value = 2;
-        param.read_from_dialog();
-        assertEquals(param.get_value().intValue(), 2, "IntParameter should read from dialogs correctly.");
+        param.addToDialog(dialog);
+        dialog.getInteger(0).value = 2;
+        param.readFromDialog();
+        assertEquals(param.getValue().intValue(), 2, "IntParameter should read from dialogs correctly.");
 
-        param.set_bounds(0, 3);
+        param.setBounds(0, 3);
 
-        dialog.get_integer(0).value = 4;
-        param.read_from_dialog();
-        assertTrue(param.get_error() != null, "After inputting a number outside the range, there should be an error.");
-        dialog.get_integer(0).value = 2;
-        param.read_from_dialog();
-        assertTrue(param.get_error() == null, "After being out of range, going back inside it should make no error.");
+        dialog.getInteger(0).value = 4;
+        param.readFromDialog();
+        assertTrue(param.getError() != null, "After inputting a number outside the range, there should be an error.");
+        dialog.getInteger(0).value = 2;
+        param.readFromDialog();
+        assertTrue(param.getError() == null, "After being out of range, going back inside it should make no error.");
 
-        dialog.get_integer(0).value = null;
-        param.read_from_dialog();
-        assertTrue(param.get_error() != null, "After inputting an invalid number, there should be an error.");
-        dialog.get_integer(0).value = 2;
-        param.read_from_dialog();
-        assertTrue(param.get_error() == null, "After inputting a valid number, there should not be an error.");
+        dialog.getInteger(0).value = null;
+        param.readFromDialog();
+        assertTrue(param.getError() != null, "After inputting an invalid number, there should be an error.");
+        dialog.getInteger(0).value = 2;
+        param.readFromDialog();
+        assertTrue(param.getError() == null, "After inputting a valid number, there should not be an error.");
     }
-    @Test public void test_prefs()
+    @Test public void testPrefs()
     {
         Context context = new Context(PrefService.class);
         TestDialog dialog = new TestDialog();
@@ -75,17 +75,17 @@ public class IntParameterTest {
         IntParameter param2 = new IntParameter(3, "");
         context.inject(param1);
         context.inject(param2);
-        param1.add_to_dialog(dialog); // Bounds only works through the dialog
-        param2.add_to_dialog(dialog); // Ditto
-        param1.save_to_prefs(getClass(), "a");
-        param2.save_to_prefs(getClass(), "b");
-        param2.read_from_prefs(getClass(), "a");
-        assertEquals(param2.get_value().intValue(), 1, "IntParameter should read from prefs correctly.");
+        param1.addToDialog(dialog); // Bounds only works through the dialog
+        param2.addToDialog(dialog); // Ditto
+        param1.saveToPrefs(getClass(), "a");
+        param2.saveToPrefs(getClass(), "b");
+        param2.readFromPrefs(getClass(), "a");
+        assertEquals(param2.getValue().intValue(), 1, "IntParameter should read from prefs correctly.");
 
-        param1.set_bounds(0, 2);
-        param1.read_from_prefs(getClass(), "b");
-        assertTrue(param1.get_error() != null, "After reading an invalid number from prefs, there should be an error.");
-        param1.read_from_prefs(getClass(), "a");
-        assertTrue(param1.get_error() == null, "After reading a valid number from prefs, there should be no error.");
+        param1.setBounds(0, 2);
+        param1.readFromPrefs(getClass(), "b");
+        assertTrue(param1.getError() != null, "After reading an invalid number from prefs, there should be an error.");
+        param1.readFromPrefs(getClass(), "a");
+        assertTrue(param1.getError() == null, "After reading a valid number from prefs, there should be no error.");
     }
 }

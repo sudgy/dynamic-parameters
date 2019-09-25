@@ -25,7 +25,7 @@ import org.scijava.plugin.Plugin;
 
 /** IntParameter is a {@link DParameter} that holds an integer.
  *
- * It also has support for bounds checking using its {@link set_bounds}
+ * It also has support for bounds checking using its {@link setBounds}
  * function.  If the value that the user inputs is outside of this bound, it
  * will be treated as an error.
  * <p>
@@ -39,21 +39,21 @@ public class IntParameter extends AbstractDParameter<Integer> {
      * <p>
      * This constructor defaults to having no units.
      *
-     * @param starting_value The value that this parameter starts at.
+     * @param startingValue The value that this parameter starts at.
      * @param label The label for this parameter to be used on the dialog.
      */
-    public IntParameter(Integer starting_value, String label)
-        {this(starting_value, label, "");}
+    public IntParameter(Integer startingValue, String label)
+        {this(startingValue, label, "");}
     /** Construct using a starting value, its label, and the units.
      *
-     * @param starting_value The value that this parameter starts at.
+     * @param startingValue The value that this parameter starts at.
      * @param label The label for this parameter to be used on the dialog.
      * @param units The units to be used for the value.  It is purely aesthetic.
      */
-    public IntParameter(Integer starting_value, String label, String units)
+    public IntParameter(Integer startingValue, String label, String units)
     {
         super(label);
-        M_value = starting_value;
+        M_value = startingValue;
         M_label = label;
         M_units = units;
     }
@@ -62,7 +62,7 @@ public class IntParameter extends AbstractDParameter<Integer> {
      * @return The number from this parameter
      */
     @Override
-    public Integer get_value() {return M_value;}
+    public Integer getValue() {return M_value;}
     /* Sets the bounds for the value.
      * <p>
      * If the value gets outside of the interval <code>[min, max]</code>, it
@@ -72,66 +72,66 @@ public class IntParameter extends AbstractDParameter<Integer> {
      * @param min The minimum value that this parameter should take
      * @param max The maximum value that this parameter should take
      */
-    public void set_bounds(int min, int max)
+    public void setBounds(int min, int max)
     {
         M_min = min;
         M_max = max;
         if (M_number != null) {
-            M_number.set_bounds(min, max);
+            M_number.setBounds(min, max);
             M_value = M_number.get();
         }
-        check_for_errors();
+        checkForErrors();
     }
 
     /** Adds this parameter to the dialog.
      */
     @Override
-    public void add_to_dialog(DPDialog dialog)
+    public void addToDialog(DPDialog dialog)
     {
-        M_number = dialog.add_integer(M_label, M_value, M_units);
-        M_number.set_bounds(M_min, M_max);
+        M_number = dialog.addInteger(M_label, M_value, M_units);
+        M_number.setBounds(M_min, M_max);
         M_value = M_number.get();
-        check_for_errors();
+        checkForErrors();
     }
     /** Reads this parameter from the dialog.
      */
     @Override
-    public void read_from_dialog()
+    public void readFromDialog()
     {
         Integer value = M_number.get();
         if (value != null) M_value = M_number.get();
-        check_for_errors();
+        checkForErrors();
     }
     /** Save this parameter to {@link prefs}
      */
     @Override
-    public void save_to_prefs(Class<?> c, String name)
+    public void saveToPrefs(Class<?> c, String name)
         {prefs().put(c, name, M_value);}
     /** Read this parameter from {@link prefs}
      */
     @Override
-    public void read_from_prefs(Class<?> c, String name)
+    public void readFromPrefs(Class<?> c, String name)
     {
         M_value = prefs().getInt(c, name, M_value);
-        check_for_errors();
+        checkForErrors();
     }
 
 
-    private void check_for_errors()
+    private void checkForErrors()
     {
         if (M_number != null) {
             if (M_number.get() == null) {
-                set_error(DParameter.display_label(M_label) + " is not an integer.");
+                setError(DParameter.displayLabel(M_label) + " is not an integer.");
                 return;
             }
-            if (!M_number.in_bounds(M_value)) {
-                if (M_min == Integer.MIN_VALUE) set_error(DParameter.display_label(M_label) + " must be less than or equal to " + M_max + ".");
-                else if (M_max == Integer.MAX_VALUE) set_error(DParameter.display_label(M_label) + " must be greater than or equal to " + M_min + ".");
-                else set_error(DParameter.display_label(M_label) + " is not in the range [" + M_min + ".." + M_max + "].");
+            if (!M_number.inBounds(M_value)) {
+                if (M_min == Integer.MIN_VALUE) setError(DParameter.displayLabel(M_label) + " must be less than or equal to " + M_max + ".");
+                else if (M_max == Integer.MAX_VALUE) setError(DParameter.displayLabel(M_label) + " must be greater than or equal to " + M_min + ".");
+                else setError(DParameter.displayLabel(M_label) + " is not in the range [" + M_min + ".." + M_max + "].");
                 return;
             }
         }
-        set_error(null);
+        setError(null);
     }
     private int M_value;
     private int M_min = Integer.MIN_VALUE;

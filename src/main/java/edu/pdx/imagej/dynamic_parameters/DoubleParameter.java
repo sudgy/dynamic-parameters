@@ -25,7 +25,7 @@ import org.scijava.plugin.Plugin;
 
 /** DoubleParameter is a {@link DParameter} that holds a floating point number.
  *
- * It also has support for bounds checking using its {@link set_bounds}
+ * It also has support for bounds checking using its {@link setBounds}
  * function.  If the value that the user inputs is outside of this bound, it
  * will be treated as an error.
  */
@@ -35,44 +35,44 @@ public class DoubleParameter extends AbstractDParameter<Double> {
      * <p>
      * This constructor defaults to having no units and three decimal places.
      *
-     * @param starting_value The value that this parameter starts at.
+     * @param startingValue The value that this parameter starts at.
      * @param label The label for this parameter to be used on the dialog.
      */
-    public DoubleParameter(Double starting_value, String label)
-        {this(starting_value, label, "", 3);}
+    public DoubleParameter(Double startingValue, String label)
+        {this(startingValue, label, "", 3);}
     /** Construct using a starting value, its label, and the number of decimal
      * places allowed.
      * <p>
      * This constructor defaults to having no units.
      *
-     * @param starting_value The value that this parameter starts at.
+     * @param startingValue The value that this parameter starts at.
      * @param label The label for this parameter to be used on the dialog.
      * @param decimals The number of decimal places allowed for the value.
      */
-    public DoubleParameter(Double starting_value, String label, int decimals)
-        {this(starting_value, label, "", decimals);}
+    public DoubleParameter(Double startingValue, String label, int decimals)
+        {this(startingValue, label, "", decimals);}
     /** Construct using a starting value, its label, and the units.
      * <p>
      * This constructor defaults to having three decimal places.
      *
-     * @param starting_value The value that this parameter starts at.
+     * @param startingValue The value that this parameter starts at.
      * @param label The label for this parameter to be used on the dialog.
      * @param units The units to be used for the value.  It is purely aesthetic.
      */
-    public DoubleParameter(Double starting_value, String label, String units)
-        {this(starting_value, label, units, 3);}
+    public DoubleParameter(Double startingValue, String label, String units)
+        {this(startingValue, label, units, 3);}
     /** Construct using a starting value, a label, units, and the number of
      * decimal places allowed.
      *
-     * @param starting_value The value that this parameter starts at.
+     * @param startingValue The value that this parameter starts at.
      * @param label The label for this parameter to be used on the dialog.
      * @param units The units to be used for the value.  It is purely aesthetic.
      * @param decimals The number of decimal places allowed for the value.
      */
-    public DoubleParameter(Double starting_value, String label, String units, int decimals)
+    public DoubleParameter(Double startingValue, String label, String units, int decimals)
     {
         super(label);
-        M_value = starting_value;
+        M_value = startingValue;
         M_label = label;
         M_units = units;
         M_decimals = decimals;
@@ -82,92 +82,92 @@ public class DoubleParameter extends AbstractDParameter<Double> {
      * @return The number from this parameter
      */
     @Override
-    public Double get_value() {return M_value;}
+    public Double getValue() {return M_value;}
     /** Sets the bounds for the value.
      * <p>
      * If the value gets outside of the interval <code>[min, max]</code>, it
      * will be treated as an error.  Here are some examples of intervals and the
      * call needed to get them:
      * <ul>
-     *      <li>[2, 4] : <code>set_bounds(2.0, 4.0)</code></li>
-     *      <li>[0, ∞) : <code>set_bounds(0, Double.MAX_VALUE)</code></li>
-     *      <li>(-∞, 0) : <code>set_bounds(-Double.MAX_VALUE, -Double.MIN_VALUE)</code></li>
+     *      <li>[2, 4] : <code>setBounds(2.0, 4.0)</code></li>
+     *      <li>[0, ∞) : <code>setBounds(0, Double.MAX_VALUE)</code></li>
+     *      <li>(-∞, 0) : <code>setBounds(-Double.MAX_VALUE, -Double.MIN_VALUE)</code></li>
      * </ul>
      *
      * @param min The minimum value that this parameter should take
      * @param max The maximum value that this parameter should take
      */
-    public void set_bounds(double min, double max)
+    public void setBounds(double min, double max)
     {
         M_min = min;
         M_max = max;
         if (M_number != null) {
-            M_number.set_bounds(min, max);
+            M_number.setBounds(min, max);
             M_value = M_number.get();
         }
-        check_for_errors();
+        checkForErrors();
     }
 
     /** Adds this parameter to the dialog.
      */
     @Override
-    public void add_to_dialog(DPDialog dialog)
+    public void addToDialog(DPDialog dialog)
     {
-        M_number = dialog.add_double(M_label, M_value, M_units, M_decimals);
-        M_number.set_bounds(M_min, M_max);
+        M_number = dialog.addDouble(M_label, M_value, M_units, M_decimals);
+        M_number.setBounds(M_min, M_max);
         M_value = M_number.get();
-        check_for_errors();
+        checkForErrors();
     }
     /** Reads this parameter from the dialog.
      */
     @Override
-    public void read_from_dialog()
+    public void readFromDialog()
     {
         Double value = M_number.get();
         if (value != null) M_value = M_number.get();
-        check_for_errors();
+        checkForErrors();
     }
     /** Save this parameter to {@link prefs}
      */
     @Override
-    public void save_to_prefs(Class<?> c, String name)
+    public void saveToPrefs(Class<?> c, String name)
         {prefs().put(c, name, M_value);}
     /** Read this parameter from {@link prefs}
      */
     @Override
-    public void read_from_prefs(Class<?> c, String name)
+    public void readFromPrefs(Class<?> c, String name)
     {
         M_value = prefs().getDouble(c, name, M_value);
-        check_for_errors();
+        checkForErrors();
     }
 
-    private void check_for_errors()
+    private void checkForErrors()
     {
         if (M_number != null) {
             if (M_number.get() == null) {
-                set_error(DParameter.display_label(M_label) + " is not a number.");
+                setError(DParameter.displayLabel(M_label) + " is not a number.");
                 return;
             }
-            if (!M_number.in_bounds(M_value)) {
-                boolean greater_than_zero = M_min == Double.MIN_VALUE;
-                boolean less_than_zero = M_max == -Double.MIN_VALUE;
-                boolean negative_inf = M_min == -Double.MAX_VALUE;
-                boolean positive_inf = M_max == Double.MAX_VALUE;
-                if (negative_inf) {
-                    if (less_than_zero) set_error(DParameter.display_label(M_label) + " must be less than zero.");
-                    else set_error(DParameter.display_label(M_label) + " must be less than or equal to " + M_max + ".");
+            if (!M_number.inBounds(M_value)) {
+                boolean greaterThanZero = M_min == Double.MIN_VALUE;
+                boolean lessThanZero = M_max == -Double.MIN_VALUE;
+                boolean negativeInf = M_min == -Double.MAX_VALUE;
+                boolean positiveInf = M_max == Double.MAX_VALUE;
+                if (negativeInf) {
+                    if (lessThanZero) setError(DParameter.displayLabel(M_label) + " must be less than zero.");
+                    else setError(DParameter.displayLabel(M_label) + " must be less than or equal to " + M_max + ".");
                 }
-                else if (positive_inf) {
-                    if (greater_than_zero) set_error(DParameter.display_label(M_label) + " must be greater than zero.");
-                    else set_error(DParameter.display_label(M_label) + "must be greater than or equal to " + M_max + ".");
+                else if (positiveInf) {
+                    if (greaterThanZero) setError(DParameter.displayLabel(M_label) + " must be greater than zero.");
+                    else setError(DParameter.displayLabel(M_label) + "must be greater than or equal to " + M_max + ".");
                 }
-                else if (less_than_zero) set_error(DParameter.display_label(M_label) + " must be in the range [" + M_min + " .. 0).");
-                else if (greater_than_zero) set_error(DParameter.display_label(M_label) + " must be in the range (0 .. " + M_max + "].");
-                else set_error(DParameter.display_label(M_label) + " must be in the range [" + M_min + " .. " + M_max + "].");
+                else if (lessThanZero) setError(DParameter.displayLabel(M_label) + " must be in the range [" + M_min + " .. 0).");
+                else if (greaterThanZero) setError(DParameter.displayLabel(M_label) + " must be in the range (0 .. " + M_max + "].");
+                else setError(DParameter.displayLabel(M_label) + " must be in the range [" + M_min + " .. " + M_max + "].");
                 return;
             }
         }
-        set_error(null);
+        setError(null);
     }
 
     private double M_value;
